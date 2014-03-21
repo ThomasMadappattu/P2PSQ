@@ -13,6 +13,8 @@ import android.view.View;
 import java.util.*;
 import android.widget.*;
 import android.content.*;
+import android.hardware.Camera;
+import android.hardware.Camera.CameraInfo;
 import android.bluetooth.*;  
 import java.io.*;
 
@@ -25,21 +27,31 @@ public class MainActivity extends Activity {
 	 private BluetoothSocket socket;
 	 BluetoothDevice pairedDevice=null;
 	 private UUID uuid = UUID.fromString("a60f35f0-b93a-11de-8a39-08002009c666");
-     private Button sendButton; 
-	 private EditText textMsg;
-	 private EditText destPhone; 
+     private Button configButton; 
+     private Button smsButton; 
+     private Button camButton;
+     private Button browserButton;
+	
 	 int REQUEST_ENABLE_BT = 3; 
 	 BloothServiceHandler btServer ; 
+	 Camera camera=null;
+	 int cameraId = -1;
+	 CameraPreview mPreview;
+
 	 
 //	 ArrayAdapter<String> mArrayAdapter = new ArrayAdapter<String>(); 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		textMsg = (EditText)findViewById(R.id.editText3); 
-		sendButton = (Button)findViewById(R.id.button1);
-		destPhone = (EditText)findViewById(R.id.editText2); 
-	    
+		
+		configButton = (Button)findViewById(R.id.btnConfig);
+		smsButton = (Button)findViewById(R.id.btnSMS);
+		camButton = (Button)findViewById(R.id.btnCamera);
+		browserButton = (Button)findViewById(R.id.btnBrowser);
+		
+		
+		
 		configBluetooth(); 
 		if ( !bluetooth.isEnabled())
 		{
@@ -48,8 +60,53 @@ public class MainActivity extends Activity {
             
 			 
 		}
-		 
 		
+	    configButton.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				
+				Intent serviceChoiceIntent = new Intent(getApplicationContext(),ServiceShareChoiceActivity.class);
+				serviceChoiceIntent.putExtra("avServices","Foo,Bar,Heck");
+			    startActivity(serviceChoiceIntent);
+				
+			}
+		}) 	;
+		
+	    smsButton.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				
+				Intent smsIntent = new Intent(getApplicationContext(),SMSActivity.class);
+			    startActivity(smsIntent);
+				
+			}
+		}) 	;
+	    
+	    camButton.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+	    
+        browserButton.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				
+				Intent browserIntent = new Intent(getApplicationContext(),BrowserActivity.class);
+			    startActivity(browserIntent);
+				
+			}
+		});
+        
+        
+		
+		/*
 		if (bluetooth.getBondedDevices().size() > 0) {
 		    // Loop through paired devices
 		    for (BluetoothDevice device : bluetooth.getBondedDevices()) {
@@ -68,12 +125,70 @@ public class MainActivity extends Activity {
 			
 		}
 		String msgToSend; 
+		
 		sendButton.setOnClickListener(new View.OnClickListener() {
 		    public void onClick(View v) {
 		        // Do something in response to button click
-		    	sendMessage(destPhone.getText() + ":" +textMsg.getText());
+		     	// sendMessage(destPhone.getText() + ":" +textMsg.getText());
+		    	
+			   // FrameLayout preview = (FrameLayout) findViewById(R.id.layout2);
+   
+		     	/*
+		     	 Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+		         startActivityForResult(intent, 0);
+		         */
+		    	/*
+			    setupCamera(); 
+			    camera.takePicture(null, null, new PhotoHandler(getApplicationContext())) ;
+			    
+			    *
+			    */
+	/*		    
+			    Intent serviceChoiceIntent = new Intent(getApplicationContext(),BrowserActivity.class);
+			    startActivity(serviceChoiceIntent);
+			    
+			    //startActivity(new ServiceShareChoiceActivity());
 		    }
 		});
+		*/ 
+	}
+	private void setupCamera()
+	{
+		 int numberOfCameras = Camera.getNumberOfCameras();
+		    for (int i = 0; i < numberOfCameras; i++) {
+		      CameraInfo info = new CameraInfo();
+		      Camera.getCameraInfo(i, info);
+		      if (info.facing == CameraInfo.CAMERA_FACING_BACK) {
+		        Log.d("P2PSQ", "Camera found");
+		        cameraId = i;
+		       
+		        break;
+		      }
+		    }
+		   
+   
+		if ( cameraId >= 0 ) 
+		{
+	     
+		  Log.d("Camera: " , "Camera Opened ! ") ; 	
+		  camera = Camera.open(cameraId) ;
+		  if ( camera == null) 
+			  Log.d("Camera: " , "Unable to open camera ") ; 	
+		    
+		  /*Intent browserIntent = new Inent(getApplicationContext(),BrowserActivity.class);
+			    startActivity(browserIntent);
+		      mPreview = new CameraPreview(this, camera);
+	          FrameLayout preview = (FrameLayout) findViewById(R.id.layout2);
+	          preview.addView(mPreview);
+	      */  
+	          camera.startPreview();
+		  /*
+		  mPreview = new CameraPreview(this, camera);
+	      FrameLayout preview = (FrameLayout) findViewById(R.id.layout2);
+          preview.addView(mPreview);
+          */
+		}
+		
 	}
 	private void sendMessage(String message) {
         // Check that we're actually connected before trying anything
