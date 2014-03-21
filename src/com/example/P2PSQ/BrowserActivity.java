@@ -13,23 +13,26 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.webkit.WebView;
 import android.widget.EditText;
-public class BrowserActivity extends Activity implements OnClickListener  {
+
+public class BrowserActivity extends Activity implements OnClickListener
+{
 
 	WebView page;
 	EditText url;
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	protected void onCreate(Bundle savedInstanceState)
+	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_browser);
-		
+
 		page = (WebView) findViewById(R.id.wvPage);
 		url = (EditText) findViewById(R.id.edURL);
 
 		page.getSettings().setJavaScriptEnabled(true);
 		page.getSettings().setUseWideViewPort(true);
 		page.getSettings().setLoadWithOverviewMode(true);
-        page.getSettings().setBuiltInZoomControls(true);  
+		page.getSettings().setBuiltInZoomControls(true);
 
 		page.setWebViewClient(new PageViewClient());
 		page.loadUrl("https://piazza.com");
@@ -43,33 +46,39 @@ public class BrowserActivity extends Activity implements OnClickListener  {
 	}
 
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
+	public boolean onCreateOptionsMenu(Menu menu)
+	{
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.browser, menu);
 		return true;
 	}
-	
+
 	@Override
-	public void onClick(View v) {
-		
-		switch (v.getId()) {
+	public void onClick(View v)
+	{
+
+		switch (v.getId())
+		{
 
 		case R.id.bGo:
-			if (! url.getText().toString().regionMatches(true,0,"http://", 0, "http://".length()))
+			if (!url.getText().toString()
+					.regionMatches(true, 0, "http://", 0, "http://".length()))
 			{
-				 url.setText("http://" + url.getText().toString()) ; 
+				url.setText("http://" + url.getText().toString());
 			}
 			page.loadUrl(url.getText().toString());
 			break;
 
 		case R.id.bBack:
-			if (page.canGoBack()) {
+			if (page.canGoBack())
+			{
 				page.goBack();
 			}
 			break;
 
 		case R.id.bForward:
-			if (page.canGoForward()) {
+			if (page.canGoForward())
+			{
 				page.goForward();
 			}
 			break;
@@ -83,6 +92,5 @@ public class BrowserActivity extends Activity implements OnClickListener  {
 			break;
 		}
 	}
-
 
 }

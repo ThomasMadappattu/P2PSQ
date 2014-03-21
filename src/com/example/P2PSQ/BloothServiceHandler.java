@@ -1,6 +1,5 @@
 package com.example.P2PSQ;
 
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -22,9 +21,9 @@ import android.util.Log;
  * connections, a thread for connecting with a device, and a thread for
  * performing data transmissions when connected.
  */
-public class BloothServiceHandler {
+public class BloothServiceHandler
+{
 	// Debugging
-
 
 	public static final int MESSAGE_STATE_CHANGE = 1;
 	public static final int MESSAGE_READ = 2;
@@ -33,7 +32,6 @@ public class BloothServiceHandler {
 	public static final int MESSAGE_TOAST = 5;
 	public static final String DEVICE_NAME = "device_name";
 	public static final String TOAST = "toast";
-
 
 	private static final String TAG = "BluetoothChatService";
 	private static final boolean D = true;
@@ -56,17 +54,19 @@ public class BloothServiceHandler {
 	public static final int STATE_CONNECTING = 2; // now initiating an outgoing
 	// connection
 	public static final int STATE_CONNECTED = 3; // now connected to a remote
+
 	// device
 
 	/**
 	 * Constructor. Prepares a new BluetoothChat session.
-	 *
+	 * 
 	 * @param context
 	 *            The UI Activity Context
 	 * @param handler
 	 *            A Handler to send messages back to the UI Activity
 	 */
-	public BloothServiceHandler(Context context, Handler handler) {
+	public BloothServiceHandler(Context context, Handler handler)
+	{
 		mAdapter = BluetoothAdapter.getDefaultAdapter();
 		mState = STATE_NONE;
 		mHandler = handler;
@@ -74,25 +74,27 @@ public class BloothServiceHandler {
 
 	/**
 	 * Set the current state of the chat connection
-	 *
+	 * 
 	 * @param state
 	 *            An integer defining the current connection state
 	 */
-	private synchronized void setState(int state) {
-		if (D) {
+	private synchronized void setState(int state)
+	{
+		if (D)
+		{
 			Log.d(TAG, "setState() " + mState + " -> " + state);
 		}
 		mState = state;
 
 		// Give the new state to the Handler so the UI Activity can update
-		mHandler.obtainMessage(MESSAGE_STATE_CHANGE, state, -1)
-		.sendToTarget();
+		mHandler.obtainMessage(MESSAGE_STATE_CHANGE, state, -1).sendToTarget();
 	}
 
 	/**
 	 * Return the current connection state.
 	 */
-	public synchronized int getState() {
+	public synchronized int getState()
+	{
 		return mState;
 	}
 
@@ -100,25 +102,30 @@ public class BloothServiceHandler {
 	 * Start the chat service. Specifically start AcceptThread to begin a
 	 * session in listening (server) mode. Called by the Activity onResume()
 	 */
-	public synchronized void start() {
-		if (D) {
+	public synchronized void start()
+	{
+		if (D)
+		{
 			Log.d(TAG, "start");
 		}
 
 		// Cancel any thread attempting to make a connection
-		if (mConnectThread != null) {
+		if (mConnectThread != null)
+		{
 			mConnectThread.cancel();
 			mConnectThread = null;
 		}
 
 		// Cancel any thread currently running a connection
-		if (mConnectedThread != null) {
+		if (mConnectedThread != null)
+		{
 			mConnectedThread.cancel();
 			mConnectedThread = null;
 		}
 
 		// Start the thread to listen on a BluetoothServerSocket
-		if (mAcceptThread == null) {
+		if (mAcceptThread == null)
+		{
 			mAcceptThread = new AcceptThread();
 			mAcceptThread.start();
 		}
@@ -127,25 +134,30 @@ public class BloothServiceHandler {
 
 	/**
 	 * Start the ConnectThread to initiate a connection to a remote device.
-	 *
+	 * 
 	 * @param device
 	 *            The BluetoothDevice to connect
 	 */
-	public synchronized void connect(BluetoothDevice device) {
-		if (D) {
+	public synchronized void connect(BluetoothDevice device)
+	{
+		if (D)
+		{
 			Log.d(TAG, "connect to: " + device);
 		}
 
 		// Cancel any thread attempting to make a connection
-		if (mState == STATE_CONNECTING) {
-			if (mConnectThread != null) {
+		if (mState == STATE_CONNECTING)
+		{
+			if (mConnectThread != null)
+			{
 				mConnectThread.cancel();
 				mConnectThread = null;
 			}
 		}
 
 		// Cancel any thread currently running a connection
-		if (mConnectedThread != null) {
+		if (mConnectedThread != null)
+		{
 			mConnectedThread.cancel();
 			mConnectedThread = null;
 		}
@@ -158,33 +170,38 @@ public class BloothServiceHandler {
 
 	/**
 	 * Start the ConnectedThread to begin managing a Bluetooth connection
-	 *
+	 * 
 	 * @param socket
 	 *            The BluetoothSocket on which the connection was made
 	 * @param device
 	 *            The BluetoothDevice that has been connected
 	 */
 	public synchronized void connected(BluetoothSocket socket,
-			BluetoothDevice device) {
-		if (D) {
+			BluetoothDevice device)
+	{
+		if (D)
+		{
 			Log.d(TAG, "connected");
 		}
 
 		// Cancel the thread that completed the connection
-		if (mConnectThread != null) {
+		if (mConnectThread != null)
+		{
 			mConnectThread.cancel();
 			mConnectThread = null;
 		}
 
 		// Cancel any thread currently running a connection
-		if (mConnectedThread != null) {
+		if (mConnectedThread != null)
+		{
 			mConnectedThread.cancel();
 			mConnectedThread = null;
 		}
 
 		// Cancel the accept thread because we only want to connect to one
 		// device
-		if (mAcceptThread != null) {
+		if (mAcceptThread != null)
+		{
 			mAcceptThread.cancel();
 			mAcceptThread = null;
 		}
@@ -206,19 +223,24 @@ public class BloothServiceHandler {
 	/**
 	 * Stop all threads
 	 */
-	public synchronized void stop() {
-		if (D) {
+	public synchronized void stop()
+	{
+		if (D)
+		{
 			Log.d(TAG, "stop");
 		}
-		if (mConnectThread != null) {
+		if (mConnectThread != null)
+		{
 			mConnectThread.cancel();
 			mConnectThread = null;
 		}
-		if (mConnectedThread != null) {
+		if (mConnectedThread != null)
+		{
 			mConnectedThread.cancel();
 			mConnectedThread = null;
 		}
-		if (mAcceptThread != null) {
+		if (mAcceptThread != null)
+		{
 			mAcceptThread.cancel();
 			mAcceptThread = null;
 		}
@@ -227,17 +249,20 @@ public class BloothServiceHandler {
 
 	/**
 	 * Write to the ConnectedThread in an unsynchronized manner
-	 *
+	 * 
 	 * @param out
 	 *            The bytes to write
 	 * @see ConnectedThread#write(byte[])
 	 */
-	public void write(byte[] out) {
+	public void write(byte[] out)
+	{
 		// Create temporary object
 		ConnectedThread r;
 		// Synchronize a copy of the ConnectedThread
-		synchronized (this) {
-			if (mState != STATE_CONNECTED) {
+		synchronized (this)
+		{
+			if (mState != STATE_CONNECTED)
+			{
 				return;
 			}
 			r = mConnectedThread;
@@ -249,7 +274,8 @@ public class BloothServiceHandler {
 	/**
 	 * Indicate that the connection attempt failed and notify the UI Activity.
 	 */
-	private void connectionFailed() {
+	private void connectionFailed()
+	{
 		setState(STATE_LISTEN);
 
 		// Send a failure message back to the Activity
@@ -263,7 +289,8 @@ public class BloothServiceHandler {
 	/**
 	 * Indicate that the connection was lost and notify the UI Activity.
 	 */
-	private void connectionLost() {
+	private void connectionLost()
+	{
 		setState(STATE_LISTEN);
 
 		// Send a failure message back to the Activity
@@ -279,46 +306,58 @@ public class BloothServiceHandler {
 	 * like a server-side client. It runs until a connection is accepted (or
 	 * until cancelled).
 	 */
-	private class AcceptThread extends Thread {
+	private class AcceptThread extends Thread
+	{
 		// The local server socket
 		private final BluetoothServerSocket mmServerSocket;
 
-		public AcceptThread() {
+		public AcceptThread()
+		{
 			BluetoothServerSocket tmp = null;
 
 			// Create a new listening server socket
-			try {
+			try
+			{
 				tmp = mAdapter
 						.listenUsingRfcommWithServiceRecord(NAME, MY_UUID);
-			} catch (IOException e) {
+			} catch (IOException e)
+			{
 				Log.e(TAG, "listen() failed", e);
 			}
 			mmServerSocket = tmp;
 		}
 
 		@Override
-		public void run() {
-			if (D) {
+		public void run()
+		{
+			if (D)
+			{
 				Log.d(TAG, "BEGIN mAcceptThread" + this);
 			}
 			setName("AcceptThread");
 			BluetoothSocket socket = null;
 
 			// Listen to the server socket if we're not connected
-			while (mState != STATE_CONNECTED) {
-				try {
+			while (mState != STATE_CONNECTED)
+			{
+				try
+				{
 					// This is a blocking call and will only return on a
 					// successful connection or an exception
 					socket = mmServerSocket.accept();
-				} catch (IOException e) {
+				} catch (IOException e)
+				{
 					Log.e(TAG, "accept() failed", e);
 					break;
 				}
 
 				// If a connection was accepted
-				if (socket != null) {
-					synchronized (BloothServiceHandler.this) {
-						switch (mState) {
+				if (socket != null)
+				{
+					synchronized (BloothServiceHandler.this)
+					{
+						switch (mState)
+						{
 						case STATE_LISTEN:
 						case STATE_CONNECTING:
 							// Situation normal. Start the connected thread.
@@ -328,29 +367,35 @@ public class BloothServiceHandler {
 						case STATE_CONNECTED:
 							// Either not ready or already connected. Terminate
 							// new socket.
-							try {
+							try
+							{
 								socket.close();
-							} catch (IOException e) {
-								Log.e(TAG,"Could not close unwanted socket",
-										e);
+							} catch (IOException e)
+							{
+								Log.e(TAG, "Could not close unwanted socket", e);
 							}
 							break;
 						}
 					}
 				}
 			}
-			if (D) {
+			if (D)
+			{
 				Log.i(TAG, "END mAcceptThread");
 			}
 		}
 
-		public void cancel() {
-			if (D) {
+		public void cancel()
+		{
+			if (D)
+			{
 				Log.d(TAG, "cancel " + this);
 			}
-			try {
+			try
+			{
 				mmServerSocket.close();
-			} catch (IOException e) {
+			} catch (IOException e)
+			{
 				Log.e(TAG, "close() of server failed", e);
 			}
 		}
@@ -361,27 +406,32 @@ public class BloothServiceHandler {
 	 * device. It runs straight through; the connection either succeeds or
 	 * fails.
 	 */
-	private class ConnectThread extends Thread {
+	private class ConnectThread extends Thread
+	{
 		private final BluetoothSocket mmSocket;
 
 		private final BluetoothDevice mmDevice;
 
-		public ConnectThread(BluetoothDevice device) {
+		public ConnectThread(BluetoothDevice device)
+		{
 			mmDevice = device;
 			BluetoothSocket tmp = null;
 
 			// Get a BluetoothSocket for a connection with the given
 			// BluetoothDevice
-			try {
+			try
+			{
 				tmp = device.createRfcommSocketToServiceRecord(MY_UUID);
-			} catch (IOException e) {
+			} catch (IOException e)
+			{
 				Log.e(TAG, "create() failed", e);
 			}
 			mmSocket = tmp;
 		}
 
 		@Override
-		public void run() {
+		public void run()
+		{
 			Log.i(TAG, "BEGIN mConnectThread");
 			setName("ConnectThread");
 
@@ -389,17 +439,22 @@ public class BloothServiceHandler {
 			mAdapter.cancelDiscovery();
 
 			// Make a connection to the BluetoothSocket
-			try {
+			try
+			{
 				// This is a blocking call and will only return on a
 				// successful connection or an exception
 				mmSocket.connect();
-			} catch (IOException e) {
+			} catch (IOException e)
+			{
 				connectionFailed();
 				// Close the socket
-				try {
+				try
+				{
 					mmSocket.close();
-				} catch (IOException e2) {
-					Log.e(TAG,"unable to close() socket during connection failure",
+				} catch (IOException e2)
+				{
+					Log.e(TAG,
+							"unable to close() socket during connection failure",
 							e2);
 				}
 				// Start the service over to restart listening mode
@@ -408,7 +463,8 @@ public class BloothServiceHandler {
 			}
 
 			// Reset the ConnectThread because we're done
-			synchronized (BloothServiceHandler.this) {
+			synchronized (BloothServiceHandler.this)
+			{
 				mConnectThread = null;
 			}
 
@@ -416,10 +472,13 @@ public class BloothServiceHandler {
 			connected(mmSocket, mmDevice);
 		}
 
-		public void cancel() {
-			try {
+		public void cancel()
+		{
+			try
+			{
 				mmSocket.close();
-			} catch (IOException e) {
+			} catch (IOException e)
+			{
 				Log.e(TAG, "close() of connect socket failed", e);
 			}
 		}
@@ -429,24 +488,28 @@ public class BloothServiceHandler {
 	 * This thread runs during a connection with a remote device. It handles all
 	 * incoming and outgoing transmissions.
 	 */
-	private class ConnectedThread extends Thread {
+	private class ConnectedThread extends Thread
+	{
 		private final BluetoothSocket mmSocket;
 
 		private final InputStream mmInStream;
 
 		private final OutputStream mmOutStream;
 
-		public ConnectedThread(BluetoothSocket socket) {
+		public ConnectedThread(BluetoothSocket socket)
+		{
 			Log.d(TAG, "create ConnectedThread");
 			mmSocket = socket;
 			InputStream tmpIn = null;
 			OutputStream tmpOut = null;
 
 			// Get the BluetoothSocket input and output streams
-			try {
+			try
+			{
 				tmpIn = socket.getInputStream();
 				tmpOut = socket.getOutputStream();
-			} catch (IOException e) {
+			} catch (IOException e)
+			{
 				Log.e(TAG, "temp sockets not created", e);
 			}
 
@@ -455,14 +518,17 @@ public class BloothServiceHandler {
 		}
 
 		@Override
-		public void run() {
+		public void run()
+		{
 			Log.i(TAG, "BEGIN mConnectedThread");
 			byte[] buffer = new byte[1024];
 			int bytes;
 
 			// Keep listening to the InputStream while connected
-			while (true) {
-				try {
+			while (true)
+			{
+				try
+				{
 					// Read from the InputStream
 					bytes = mmInStream.read(buffer);
 
@@ -470,12 +536,13 @@ public class BloothServiceHandler {
 
 					// XXX !!!
 					String buffer2 = new String(buffer);
-					buffer2= buffer2.substring(0, buffer2.length()-3)+"\n";
+					buffer2 = buffer2.substring(0, buffer2.length() - 3) + "\n";
 
-					mHandler.obtainMessage(MESSAGE_READ, bytes,
-							-1, buffer2.getBytes()).sendToTarget();
+					mHandler.obtainMessage(MESSAGE_READ, bytes, -1,
+							buffer2.getBytes()).sendToTarget();
 
-				} catch (IOException e) {
+				} catch (IOException e)
+				{
 					Log.e(TAG, "disconnected", e);
 					connectionLost();
 					break;
@@ -485,34 +552,39 @@ public class BloothServiceHandler {
 
 		/**
 		 * Write to the connected OutStream.
-		 *
+		 * 
 		 * @param buffer
 		 *            The bytes to write
 		 */
-		public void write(byte[] buffer) {
-			try {
+		public void write(byte[] buffer)
+		{
+			try
+			{
 				mmOutStream.write(buffer);
 
 				// Share the sent message back to the UI Activity
 
 				// XXX !!!
 				String buffer2 = new String(buffer);
-				buffer2= buffer2.substring(0, buffer2.length()-2);
+				buffer2 = buffer2.substring(0, buffer2.length() - 2);
 				mHandler.obtainMessage(MESSAGE_WRITE, -1, -1,
 						buffer2.getBytes()).sendToTarget();
 
-			} catch (IOException e) {
+			} catch (IOException e)
+			{
 				Log.e(TAG, "Exception during write", e);
 			}
 		}
 
-		public void cancel() {
-			try {
+		public void cancel()
+		{
+			try
+			{
 				mmSocket.close();
-			} catch (IOException e) {
+			} catch (IOException e)
+			{
 				Log.e(TAG, "close() of connect socket failed", e);
 			}
 		}
 	}
 }
-
