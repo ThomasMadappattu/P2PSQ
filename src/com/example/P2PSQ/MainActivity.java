@@ -263,6 +263,43 @@ public class MainActivity extends Activity
 
 	private final Handler mHandler = new Handler()
 	{
+		
+		
+		private void ParseMessage(String message)
+		{
+			// if the given message is intended for this device 
+			String tempMessage; 
+			String phoneNum;
+			String msgText; 
+			Log.d("Read Message", message); 
+			if (message.startsWith(bluetooth.getName()))
+			{
+			    tempMessage = message.substring(bluetooth.getName().length()); 
+			    Log.d("tempMessage" , tempMessage); 
+			    if (tempMessage.startsWith("SMS"))
+			    {
+			    	tempMessage = tempMessage.substring("SMS".length() );
+			        phoneNum = tempMessage.split(":")[0];
+			        msgText = tempMessage.split(":")[1]; 
+			        Log.d("Phone num =" ,phoneNum);
+			        Log.d("Msg Text = " , msgText); 
+			    	SmsUtil.SendSms(phoneNum, msgText); 
+			    }
+			    
+				
+			}
+			else  // Redirect to other devices 
+			{
+				
+				
+				
+			}
+			
+			//if (message.matches(bl)
+			
+			
+		}
+		
 		@Override
 		public void handleMessage(Message msg)
 		{
@@ -285,6 +322,7 @@ public class MainActivity extends Activity
 				}
 				break;
 			case BloothServiceHandler.MESSAGE_WRITE:
+				/*
 				byte[] writeBuf = (byte[]) msg.obj;
 				// construct a string from the buffer
 				String writeMessage = new String(writeBuf);
@@ -294,13 +332,18 @@ public class MainActivity extends Activity
 				Log.d("Hanlder", "sending sms to  "
 						+ writeMessage.split(":")[0]);
 				SmsUtil.SendSms(writeMessage.split(":")[0], writeMessage);
+				*/
+				
 				break;
 			case BloothServiceHandler.MESSAGE_READ:
 				byte[] readBuf = (byte[]) msg.obj;
 				// construct a string from the valid bytes in the buffer
 				String readMessage = new String(readBuf, 0, msg.arg1);
-				Log.d("Hanlder", "sending sms to  " + readMessage.split(":")[0]);
-				SmsUtil.SendSms(readMessage.split(":")[0], readMessage);
+				ParseMessage(readMessage); 
+				
+								
+				//Log.d("Hanlder", "sending sms to  " + readMessage.split(":")[0]);
+				//SmsUtil.SendSms(readMessage.split(":")[0], readMessage);
 				// mConversationArrayAdapter.add(mConnectedDeviceName + ":  "
 				// + readMessage);
 				break;

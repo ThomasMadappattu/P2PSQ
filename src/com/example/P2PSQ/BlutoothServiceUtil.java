@@ -36,21 +36,14 @@ public class BlutoothServiceUtil
 	}
 	
 	
-	public  static void SendMessage()
+	public  static void SendMessage(String message , String deviceName)
 	{
+		String msgToSend = ConfigManager.Get("useService") + ":" + message; 
+		Log.d("Send to device" ,deviceName );
+		btServer.write(msgToSend.getBytes(), deviceName);
 		
 	}
 	
-	public static void TakePicture()
-	{
-	
-	
-	}
-	
-	public static void UpdateService()
-	{
-	
-	}
 	
 
 }

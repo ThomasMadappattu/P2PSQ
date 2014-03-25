@@ -342,15 +342,20 @@ public class BloothServiceHandler
 	
 	public void write(byte[] out , String deviceName )
 	{
+		
+		Log.d("write " , deviceName);
+		 
 		for ( ConnectedThread ctThread: connectedThreads)
 	    {
-	          if ( ctThread.GetDeviceName().compareTo(deviceName) == 0 )
+	        Log.d(" ct Devicename " , ctThread.GetDeviceName());  
+	        Log.d("Comparison Val" ,String.valueOf(ctThread.GetDeviceName().compareTo(deviceName)) );
+	        
+			if ( ctThread.GetDeviceName().compareTo(deviceName) == 0 )
 	          {
-	        	  if ( ctThread.GetState() == THREAD_CONNECTED )
-	        	  {
+	        	  
 	        		  ctThread.write(out);
 	        		  return; 
-	        	  }
+	        	 
 	          }
 	    }
 		
@@ -567,11 +572,9 @@ public class BloothServiceHandler
 			
 
 			// Reset the ConnectThread because we're done
-			synchronized (BloothServiceHandler.this)
-			{
 				//this.cancel(); 
 				setState(THREAD_CONNECTED);
-			}
+			
 
 			// Start the connected thread
 			connected(mmSocket, mmDevice);
