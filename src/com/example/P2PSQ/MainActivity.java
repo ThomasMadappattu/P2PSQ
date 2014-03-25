@@ -31,7 +31,7 @@ public class MainActivity extends Activity
 	private Button browserButton;
 
 	int REQUEST_ENABLE_BT = 3;
-	BloothServiceHandler btServer;
+	
 	Camera camera = null;
 	int cameraId = -1;
 	CameraPreview mPreview;
@@ -55,6 +55,11 @@ public class MainActivity extends Activity
 					BluetoothAdapter.ACTION_REQUEST_ENABLE);
 			startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
 
+		}
+		else
+		{
+			BlutoothServiceUtil.Init(this, mHandler);
+		
 		}
 
 		configButton.setOnClickListener(new View.OnClickListener()
@@ -194,13 +199,15 @@ public class MainActivity extends Activity
 	private void sendMessage(String message)
 	{
 		// Check that we're actually connected before trying anything
+		
+		/*
 		if (btServer.getState() != BloothServiceHandler.STATE_CONNECTED)
 		{
 			Toast.makeText(this, "sendMesssage:not connected",
 					Toast.LENGTH_SHORT).show();
 			return;
 		}
-
+        */ 
 		// Check that there's actually something to send
 		if (message.length() > 0)
 		{
@@ -210,7 +217,7 @@ public class MainActivity extends Activity
 
 			// Get the message bytes and tell the BluetoothChatService to write
 			byte[] send = message.getBytes();
-			btServer.write(send);
+			// btServer.write(send);
 
 			// Reset out string buffer to zero and clear the edit text field
 

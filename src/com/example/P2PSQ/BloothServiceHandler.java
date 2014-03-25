@@ -347,10 +347,14 @@ public class BloothServiceHandler
 	          {
 	        	  if ( ctThread.GetState() == THREAD_CONNECTED )
 	        	  {
-	        		  ctThread.write(out); 
+	        		  ctThread.write(out);
+	        		  return; 
 	        	  }
 	          }
 	    }
+		
+		// Reached here , something wrong going on 
+		Log.d("BloothServiceHandler","not able to write anything to the socket "); 
 	
 	}
 
