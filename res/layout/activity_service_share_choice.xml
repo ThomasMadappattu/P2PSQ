@@ -36,20 +36,20 @@
         android:layout_marginTop="20dp"
         android:text="Internet" />
 
-    <Button
-        android:id="@+id/doneButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignRight="@+id/smsCheckBox"
-        android:layout_below="@+id/spAvServices"
-        android:layout_marginTop="16dp"
-        android:text="Done" />
-
     <Spinner
         android:id="@+id/spAvServices"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/internetCheckbox"
         android:layout_centerHorizontal="true" />
+
+    <Button
+        android:id="@+id/doneButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/spAvServices"
+        android:layout_alignRight="@+id/spAvServices"
+        android:layout_marginRight="42dp"
+        android:text="Done" />
 
 </RelativeLayout>
