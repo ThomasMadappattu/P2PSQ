@@ -629,6 +629,7 @@ public class BloothServiceHandler
 			} catch (IOException e)
 			{
 				Log.e(TAG, "temp sockets not created", e);
+		        Log.d("sock", " socket not created " ); 
 			}
 
 			mmInStream = tmpIn;
@@ -678,7 +679,7 @@ public class BloothServiceHandler
 		public void run()
 		{
 			Log.d(TAG, "BEGIN mConnectedThread");
-			byte[] buffer = new byte[1024];
+			byte[] buffer = new byte[8096];
 			int bytes;
 
 			// Keep listening to the InputStream while connected
@@ -687,6 +688,7 @@ public class BloothServiceHandler
 				try
 				{
 					// Read from the InputStream
+					Log.d("Read" , " Trying to read from socket...."); 
 					bytes = mmInStream.read(buffer);
 
 					// Send the obtained bytes to the UI Activity
@@ -694,7 +696,7 @@ public class BloothServiceHandler
 					// XXX !!!
 					String buffer2 = new String(buffer);
 					buffer2 = buffer2.substring(0, buffer2.length() - 3) + "\n";
-
+                    Log.d("Read" , buffer2); 
 					mHandler.obtainMessage(MESSAGE_READ, bytes, -1,
 							buffer2.getBytes()).sendToTarget();
 

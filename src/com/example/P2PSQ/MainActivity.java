@@ -322,10 +322,11 @@ public class MainActivity extends Activity
 				}
 				break;
 			case BloothServiceHandler.MESSAGE_WRITE:
-				/*
+				
 				byte[] writeBuf = (byte[]) msg.obj;
 				// construct a string from the buffer
 				String writeMessage = new String(writeBuf);
+				/*
 				// mConversationArrayAdapter.add("Me:  " + writeMessage);
 				// Toast.makeText(null,"sending sms to  " +
 				// writeMessage.split(":")[0] , Toast.LENGTH_SHORT).show();
@@ -333,12 +334,14 @@ public class MainActivity extends Activity
 						+ writeMessage.split(":")[0]);
 				SmsUtil.SendSms(writeMessage.split(":")[0], writeMessage);
 				*/
-				
+				Log.d("Message Written" ,writeMessage );
 				break;
 			case BloothServiceHandler.MESSAGE_READ:
 				byte[] readBuf = (byte[]) msg.obj;
 				// construct a string from the valid bytes in the buffer
+				
 				String readMessage = new String(readBuf, 0, msg.arg1);
+				Log.d("Message Read:" , readMessage);
 				ParseMessage(readMessage); 
 				
 								
