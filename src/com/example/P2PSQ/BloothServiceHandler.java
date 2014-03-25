@@ -269,7 +269,7 @@ public class BloothServiceHandler
 		}
         */ 
 		// Start the thread to manage the connection and perform transmissions
-		mConnectedThread = new ConnectedThread(socket);
+		mConnectedThread = new ConnectedThread(socket,device);
 		connectedThreads.add(mConnectedThread);
 		mConnectedThread.start();
 
@@ -332,6 +332,26 @@ public class BloothServiceHandler
 		}
 		// Perform the write unsynchronized
 		r.write(out);
+	}
+	
+	public void write(byte[] out , BluetoothDevice device)
+	{
+	    write(out,device.getName());
+	}
+	
+	public void write(byte[] out , String deviceName )
+	{
+		for ( ConnectedThread ctThread: connectedThreads)
+	    {
+	          if ( ctThread.GetDeviceName().compareTo(deviceName) == 0 )
+	          {
+	        	  if ( ctThread.GetState() == THREAD_CONNECTED )
+	        	  {
+	        		  ctThread.write(out); 
+	        	  }
+	          }
+	    }
+	
 	}
 
 	/**
@@ -675,11 +695,7 @@ public class BloothServiceHandler
 			}
 		}
 		
-		public void write(String devName , byte[] buffer)
-		{
-			
-			
-		}
+		
 
 		public void cancel()
 		{
