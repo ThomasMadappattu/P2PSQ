@@ -29,7 +29,7 @@ public final class R {
         public static final int very_basic_refresh_icon=0x7f020005;
     }
     public static final class id {
-        public static final int action_settings=0x7f080015;
+        public static final int action_settings=0x7f080016;
         public static final int bBack=0x7f080002;
         public static final int bClear=0x7f080005;
         public static final int bForward=0x7f080003;
@@ -39,17 +39,18 @@ public final class R {
         public static final int btnCamera=0x7f080009;
         public static final int btnConfig=0x7f080007;
         public static final int btnSMS=0x7f080008;
-        public static final int buttonSend=0x7f080014;
-        public static final int cameraCheckBox=0x7f08000c;
-        public static final int doneButton=0x7f08000e;
+        public static final int buttonSend=0x7f080015;
+        public static final int cameraCheckBox=0x7f08000d;
+        public static final int connectPeers=0x7f08000b;
+        public static final int doneButton=0x7f080010;
         public static final int edURL=0x7f080000;
-        public static final int editText1=0x7f080011;
-        public static final int editText2=0x7f080013;
-        public static final int internetCheckbox=0x7f08000d;
-        public static final int smsCheckBox=0x7f08000b;
+        public static final int editText1=0x7f080012;
+        public static final int editText2=0x7f080014;
+        public static final int internetCheckbox=0x7f08000e;
+        public static final int smsCheckBox=0x7f08000c;
         public static final int spAvServices=0x7f08000f;
-        public static final int textView2=0x7f080010;
-        public static final int textView3=0x7f080012;
+        public static final int textView2=0x7f080011;
+        public static final int textView3=0x7f080013;
         public static final int wvPage=0x7f080006;
     }
     public static final class layout {

@@ -29,7 +29,7 @@ public class MainActivity extends Activity
 	private Button smsButton;
 	private Button camButton;
 	private Button browserButton;
-
+    private Button connectButton; 
 	int REQUEST_ENABLE_BT = 3;
 	
 	Camera camera = null;
@@ -47,6 +47,7 @@ public class MainActivity extends Activity
 		smsButton = (Button) findViewById(R.id.btnSMS);
 		camButton = (Button) findViewById(R.id.btnCamera);
 		browserButton = (Button) findViewById(R.id.btnBrowser);
+		connectButton = (Button) findViewById(R.id.connectPeers);
 
 		configBluetooth();
 		if (!bluetooth.isEnabled())
@@ -72,7 +73,7 @@ public class MainActivity extends Activity
 				Intent serviceChoiceIntent = new Intent(
 						getApplicationContext(),
 						ServiceShareChoiceActivity.class);
-				serviceChoiceIntent.putExtra("avServices", "Foo,Bar,Heck");
+				serviceChoiceIntent.putExtra("avServices",ConfigManager.Get("avServices"));
 				startActivity(serviceChoiceIntent);
 
 			}
@@ -116,6 +117,17 @@ public class MainActivity extends Activity
 
 			}
 		});
+		
+		connectButton.setOnClickListener(new View.OnClickListener()
+		{
+			
+			@Override
+			public void onClick(View v)
+			{
+				BlutoothServiceUtil.ConnectToPeers(bluetooth.getBondedDevices());
+				
+			}
+		});
 
 		/*
 		 * if (bluetooth.getBondedDevices().size() > 0) { // Loop through paired
@@ -155,6 +167,16 @@ public class MainActivity extends Activity
 		 */
 	}
 
+	private void initServicesList()
+	{
+		String avStr=""; 
+		for ( BluetoothDevice device : bluetooth.getBondedDevices())
+		{
+			avStr =  device.getName() + "," ; 
+		}
+		avStr += "None" ; 
+	    ConfigManager.Set("avServices", avStr); 	
+	}
 	private void setupCamera()
 	{
 		int numberOfCameras = Camera.getNumberOfCameras();

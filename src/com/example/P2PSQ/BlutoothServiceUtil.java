@@ -26,6 +26,13 @@ public class BlutoothServiceUtil
 	{
 		btServer = new BloothServiceHandler(cxt , mHandler);
 		btServer.start();
+		 
+		
+	}
+	
+	public static void ConnectToPeers(Set<BluetoothDevice> devices)
+	{
+		btServer.connectToDevices(devices);
 	}
 	
 	

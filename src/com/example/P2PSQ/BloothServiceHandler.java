@@ -387,6 +387,23 @@ public class BloothServiceHandler
 		msg.setData(bundle);
 		mHandler.sendMessage(msg);
 	}
+	
+	public void RestartFailedConnectThread(BluetoothDevice device)
+	{
+		int index  = 0 ; 
+		
+		for ( ConnectThread thread : connectThreads)
+		{
+			if (thread.GetDeviceName().compareTo(device.getName()) == 0 )
+			{
+			   connectThreads.set(index, new ConnectThread(device)); 
+			}
+			index++; 
+		}
+		
+		
+	}
+
 
 	/**
 	 * This thread runs while listening for incoming connections. It behaves
@@ -475,11 +492,15 @@ public class BloothServiceHandler
 		private final BluetoothDevice mmDevice;
 		
 		private int currentState;
+		
+		private int WAIT_TIME  = 2000 ; 
 
 		public ConnectThread(BluetoothDevice device)
 		{
 			mmDevice = device;
 			BluetoothSocket tmp = null;
+			 
+			
 
 			// Get a BluetoothSocket for a connection with the given
 			// BluetoothDevice
@@ -534,10 +555,21 @@ public class BloothServiceHandler
 							e2);
 				    
 				}
-				// Start the service over to restart listening mode
-				BloothServiceHandler.this.start();
+				// Wait for some time and restart the connect thererad 
+				try
+				{
+					this.wait(WAIT_TIME);
+				} catch (InterruptedException e1)
+				{
+					// TODO Auto-generated catch block
+					 Log.d("ConnectThread", "Wait failed");
+				}
+				
+				 // BloothServiceHandler.this.start();
+				BloothServiceHandler.this.RestartFailedConnectThread(this.mmDevice); 
 				return;
 			}
+			
 
 			// Reset the ConnectThread because we're done
 			synchronized (BloothServiceHandler.this)
@@ -548,6 +580,10 @@ public class BloothServiceHandler
 
 			// Start the connected thread
 			connected(mmSocket, mmDevice);
+		}
+		public String GetDeviceName()
+		{
+			return this.mmDevice.getName(); 
 		}
 
 		public void cancel()
@@ -700,7 +736,6 @@ public class BloothServiceHandler
 		}
 		
 		
-
 		public void cancel()
 		{
 			try

@@ -48,4 +48,13 @@
         android:layout_marginTop="17dp"
         android:text="Browser" />
 
+    <Button
+        android:id="@+id/connectPeers"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/btnConfig"
+        android:layout_marginLeft="30dp"
+        android:layout_toRightOf="@+id/btnBrowser"
+        android:text="Button" />
+
 </RelativeLayout>
