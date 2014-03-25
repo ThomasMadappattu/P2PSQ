@@ -42,14 +42,15 @@ public class MainActivity extends Activity
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-
+        Log.d("MainActivity", "onCreate"); 
 		configButton = (Button) findViewById(R.id.btnConfig);
 		smsButton = (Button) findViewById(R.id.btnSMS);
 		camButton = (Button) findViewById(R.id.btnCamera);
 		browserButton = (Button) findViewById(R.id.btnBrowser);
 		connectButton = (Button) findViewById(R.id.connectPeers);
-
+       
 		configBluetooth();
+		initServicesList(); 
 		if (!bluetooth.isEnabled())
 		{
 			Intent enableBtIntent = new Intent(
@@ -60,7 +61,7 @@ public class MainActivity extends Activity
 		else
 		{
 			BlutoothServiceUtil.Init(this, mHandler);
-		
+		    Log.d("MainAcitivtit", "here");
 		}
 
 		configButton.setOnClickListener(new View.OnClickListener()
@@ -172,7 +173,7 @@ public class MainActivity extends Activity
 		String avStr=""; 
 		for ( BluetoothDevice device : bluetooth.getBondedDevices())
 		{
-			avStr =  device.getName() + "," ; 
+			avStr +=  device.getName() + "," ; 
 		}
 		avStr += "None" ; 
 	    ConfigManager.Set("avServices", avStr); 	

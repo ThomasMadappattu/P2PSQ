@@ -128,6 +128,7 @@ public class BloothServiceHandler
 	    	connectThread = new ConnectThread(device);
 	    	connectThread.SetState(STATE_CONNECTING);
 	    	connectThreads.add(connectThread);
+	    	connectThread.start(); 
 	    }
 	
 	}
@@ -391,12 +392,14 @@ public class BloothServiceHandler
 	public void RestartFailedConnectThread(BluetoothDevice device)
 	{
 		int index  = 0 ; 
-		
+		ConnectThread ctThread; 
 		for ( ConnectThread thread : connectThreads)
 		{
 			if (thread.GetDeviceName().compareTo(device.getName()) == 0 )
 			{
-			   connectThreads.set(index, new ConnectThread(device)); 
+			    ctThread = new ConnectThread(device); 
+				connectThreads.set(index, ctThread);
+				ctThread.start();
 			}
 			index++; 
 		}
@@ -528,7 +531,7 @@ public class BloothServiceHandler
 		@Override
 		public void run()
 		{
-			Log.i(TAG, "BEGIN mConnectThread");
+			Log.d(TAG, "BEGIN mConnectThread");
 			setName("ConnectThread");
 
 			// Always cancel discovery because it will slow down a connection
@@ -555,17 +558,9 @@ public class BloothServiceHandler
 							e2);
 				    
 				}
-				// Wait for some time and restart the connect thererad 
-				try
-				{
-					this.wait(WAIT_TIME);
-				} catch (InterruptedException e1)
-				{
-					// TODO Auto-generated catch block
-					 Log.d("ConnectThread", "Wait failed");
-				}
 				
 				 // BloothServiceHandler.this.start();
+				Log.d(TAG, "Restating the failed  connect thread");
 				BloothServiceHandler.this.RestartFailedConnectThread(this.mmDevice); 
 				return;
 			}
@@ -679,7 +674,7 @@ public class BloothServiceHandler
 		@Override
 		public void run()
 		{
-			Log.i(TAG, "BEGIN mConnectedThread");
+			Log.d(TAG, "BEGIN mConnectedThread");
 			byte[] buffer = new byte[1024];
 			int bytes;
 

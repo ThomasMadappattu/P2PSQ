@@ -48,8 +48,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/spAvServices"
-        android:layout_alignRight="@+id/spAvServices"
-        android:layout_marginRight="42dp"
+        android:layout_alignParentRight="true"
         android:text="Done" />
 
 </RelativeLayout>
