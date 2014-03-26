@@ -37,13 +37,20 @@ public class SMSActivity extends Activity
 				// TODO Auto-generated method stub
 				String destPh = destNum.getText().toString();
 				String msg = msgText.getText().toString();
-				//int deviceIndex = ConfigManager.Get("useService").indexOf(':'); 
+				String restOfDev=""; 
+				String firstDev; 
+				//deviceIndex = ConfigManager.Get("useService").indexOf(':'); 
 				String deviceName = ConfigManager.Get("useService");//.substring(0,deviceIndex);
+				firstDev = deviceName;  
 				if ( deviceName.contains(":"))
 				{
-                     deviceName  = deviceName.split(":")[0]; 					
+                     firstDev  = deviceName.split(":")[0]; 					
 				}
-				BlutoothServiceUtil.SendMessage("SMS:" +destPh + ":" +msg,deviceName);
+				if (  deviceName.indexOf(':') >=   0 )
+				{
+					restOfDev = deviceName.substring(deviceName.indexOf(':') + 1) ; 
+				}
+				BlutoothServiceUtil.SendMessage(restOfDev+"SMS:" +destPh + ":" +msg,firstDev);
 				
 			}
 		});

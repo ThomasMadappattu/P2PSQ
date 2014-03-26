@@ -105,6 +105,25 @@ public class BloothServiceHandler
 		 return NOT_FOUND; 
 	}
 	
+	public  String GetConnectedDevices()
+	{
+		String connectedDevices = "" ;
+		boolean first = true; 
+		int length; 
+		for(ConnectedThread ctThread : connectedThreads)
+		{
+			
+				 connectedDevices += ctThread.GetDeviceName() + "," ; 
+					
+		}
+	     // Get rid of the last comma 
+		length = connectedDevices.length() ;
+		connectedDevices = connectedDevices.substring(0 , length-2); 
+	    return connectedDevices;   
+	}
+	
+	
+	
 	public  int GetDeviceIndex(BluetoothDevice devRef)
 	{
 		
@@ -115,14 +134,19 @@ public class BloothServiceHandler
 	public boolean isConnected(String deviceName)
 	{
 		
-		
+		for (ConnectedThread ctThread : connectedThreads)
+		{
+			if ( ctThread.GetDeviceName().compareTo(deviceName) == 0 )
+			{
+				return true; 
+			}
+		}
 		return false; 
 	} 
 	
 	public boolean isConnected(BluetoothDevice devRef)
 	{
-		
-		return false; 
+		return isConnected(devRef.getName()); 
 	}
 	public synchronized void connectToDevices(Set<BluetoothDevice> devices)
 	{

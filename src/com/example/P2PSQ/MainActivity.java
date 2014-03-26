@@ -32,6 +32,8 @@ public class MainActivity extends Activity
     private Button connectButton; 
 	int REQUEST_ENABLE_BT = 3;
 	
+	
+	
 	Camera camera = null;
 	int cameraId = -1;
 	CameraPreview mPreview;
@@ -267,12 +269,24 @@ public class MainActivity extends Activity
 		
 		private void ParseMessage(String message)
 		{
-			// if the given message is intended for this device 
+			
 			String tempMessage; 
 			String phoneNum;
 			String msgText; 
+			
 			Log.d("Read Message", message); 
-			if (message.startsWith(bluetooth.getName()))
+			// Is it as broad cast message 
+			if ( message.startsWith("BAST:"))
+			{
+				
+				 tempMessage = message.substring(0 , "BAST:".length());  
+			     BlutoothServiceUtil.AddPeers(tempMessage);
+			     ConfigManager.Set("avServices",BlutoothServiceUtil.GetPeerString());
+				 
+			}		
+			
+			// if the given message is intended for this device 
+			else if (message.startsWith(bluetooth.getName()))
 			{
 			    tempMessage = message.substring(bluetooth.getName().length()+1); 
 			    Log.d("tempMessage" , tempMessage);
