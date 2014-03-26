@@ -274,24 +274,31 @@ public class MainActivity extends Activity
 			Log.d("Read Message", message); 
 			if (message.startsWith(bluetooth.getName()))
 			{
-			    tempMessage = message.substring(bluetooth.getName().length()); 
-			    Log.d("tempMessage" , tempMessage); 
+			    tempMessage = message.substring(bluetooth.getName().length()+1); 
+			    Log.d("tempMessage" , tempMessage);
+			    
+			    // See if the we need to provide one of the services 
 			    if (tempMessage.startsWith("SMS"))
 			    {
-			    	tempMessage = tempMessage.substring("SMS".length() );
+			    	tempMessage = tempMessage.substring("SMS".length() +1 );
 			        phoneNum = tempMessage.split(":")[0];
 			        msgText = tempMessage.split(":")[1]; 
+			        Log.d("MainActivity" , "Trying to send sms ..."); 
 			        Log.d("Phone num =" ,phoneNum);
 			        Log.d("Msg Text = " , msgText); 
 			    	SmsUtil.SendSms(phoneNum, msgText); 
 			    }
 			    
+			    
+			    // it is not one of the known services 
+			    
 				
 			}
-			else  // Redirect to other devices 
+			else   
 			{
 				
-				
+	                // We are receving some garbage from somewhere handle is here 
+				    Log.d(" Unknown Meassed Read :" , message);
 				
 			}
 			

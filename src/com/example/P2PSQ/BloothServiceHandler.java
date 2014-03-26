@@ -60,6 +60,7 @@ public class BloothServiceHandler
 	
 	private static final int THREAD_CONNECTED = 4 ;
 	private static final int THREAD_STARTED  = 5;
+	private static final int NOT_FOUND = - 1 ; 
 	
 	
 	
@@ -89,7 +90,7 @@ public class BloothServiceHandler
 		mHandler = handler;
 	}
 
-	private int GetDeviceIndex(String deviceName)
+	public int GetDeviceIndex(String deviceName)
 	{
 		 int index = 0 ; 
 		 
@@ -101,24 +102,28 @@ public class BloothServiceHandler
 			 }
 			 index = index +1 ; 
 		 }
-		 return index; 
+		 return NOT_FOUND; 
 	}
 	
-	private int GetDeviceIndex(BluetoothDevice devRef)
+	public  int GetDeviceIndex(BluetoothDevice devRef)
 	{
 		
-		int index  = 0 ; 
-		for ( BluetoothDevice device: connectedDevices)
-		{
-			if(device.getName().compareTo(devRef.getName()) == 0 )
-			{
-				return index; 
-			}
-			index = index + 1 ; 
-		}
-		return index; 
+		return GetDeviceIndex(devRef.getName()); 
+		
 	}
 	
+	public boolean isConnected(String deviceName)
+	{
+		
+		
+		return false; 
+	} 
+	
+	public boolean isConnected(BluetoothDevice devRef)
+	{
+		
+		return false; 
+	}
 	public synchronized void connectToDevices(Set<BluetoothDevice> devices)
 	{
 		ConnectThread connectThread; 
@@ -262,13 +267,17 @@ public class BloothServiceHandler
 		}
         */   
 		// Cancel the accept thread because we only want to connect to one
-		/** Accept thread should never be cancelled. 
+		// Restart accept thread  after connection is established 
+		// to have multiple devices connect to the device 
 		if (mAcceptThread != null)
 		{
 			mAcceptThread.cancel();
-			mAcceptThread = null;
+			mAcceptThread = new AcceptThread();
+			mAcceptThread.start(); 
+			
 		}
-        */ 
+         
+		
 		// Start the thread to manage the connection and perform transmissions
 		mConnectedThread = new ConnectedThread(socket,device);
 		connectedThreads.add(mConnectedThread);
@@ -457,6 +466,7 @@ public class BloothServiceHandler
 					// This is a blocking call and will only return on a
 					// successful connection or an exception
 					socket = mmServerSocket.accept();
+					
 				} catch (IOException e)
 				{
 					Log.e(TAG, "accept() failed", e);
@@ -464,7 +474,12 @@ public class BloothServiceHandler
 				}
 
 				// If a connection was accepted , set the connection as accepted  
-		         		 
+		        if ( socket != null )
+		        {
+		        	 Log.d("Accept Thread " , "Looks like the connect has been accepted");
+		        	 // run the connected thread 
+		        	 connected(socket,socket.getRemoteDevice()); 
+		        }
 			}
 			if (D)
 			{
@@ -547,7 +562,10 @@ public class BloothServiceHandler
 			{
 				// This is a blocking call and will only return on a
 				// successful connection or an exception
+				Log.d("ConnectThread" , "Connecting ... ");
 				mmSocket.connect();
+				Log.d("ConnectThread ,,, ", "Connected !"); 
+				setState(THREAD_CONNECTED);
 			
 			} catch (IOException e)
 			{
@@ -624,6 +642,9 @@ public class BloothServiceHandler
 			// Get the BluetoothSocket input and output streams
 			try
 			{
+			
+				
+				
 				tmpIn = socket.getInputStream();
 				tmpOut = socket.getOutputStream();
 			} catch (IOException e)
@@ -692,13 +713,14 @@ public class BloothServiceHandler
 					bytes = mmInStream.read(buffer);
 
 					// Send the obtained bytes to the UI Activity
-
+                    Log.d("Read" , "Reached here !");   
 					// XXX !!!
 					String buffer2 = new String(buffer);
 					buffer2 = buffer2.substring(0, buffer2.length() - 3) + "\n";
                     Log.d("Read" , buffer2); 
 					mHandler.obtainMessage(MESSAGE_READ, bytes, -1,
 							buffer2.getBytes()).sendToTarget();
+				
 
 				} catch (IOException e)
 				{
