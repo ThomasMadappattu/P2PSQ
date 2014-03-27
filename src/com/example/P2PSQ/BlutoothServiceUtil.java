@@ -91,24 +91,38 @@ public class BlutoothServiceUtil
 	}
 	
 	
-	public  static void SendMessage(String message , String deviceName)
+	public  static void SendMessage(String message , String deviceName , boolean isRedirect)
 	{
-		String msgToSend = ConfigManager.Get("useService") + ":" + message + "\r\n"; 
+		String msgToSend =  message ; 
 		Log.d("Send to device" ,deviceName );
+		String forwardDeviceName  = deviceName ; 
+	    
+		if ( !isRedirect)
+		{
+			msgToSend = message + "\r\n"; 
+		}
+		
+		if ( deviceName.indexOf(':') >= 0 )
+		{
+			forwardDeviceName = deviceName.substring(0, deviceName.indexOf(':'));
+			
+		}
 		
 		// Send the message only if the device is connected  
-		if (btServer.isConnected(deviceName))
+		if (btServer.isConnected(forwardDeviceName))
 		{
-	     	btServer.write(msgToSend.getBytes(), deviceName);
+	     	btServer.write(msgToSend.getBytes(), forwardDeviceName);
 		}
 		else 
 		{
                // The nofity that there is no connection 
-			   Toast.makeText(context, "Not connected to : " + deviceName ,Toast.LENGTH_SHORT  ).show() ; 
+			   Toast.makeText(context, "Not connected to : " + forwardDeviceName  ,Toast.LENGTH_SHORT  ).show() ; 
 			
 		}
 		
 	}
+	
+	
 	
 	
 

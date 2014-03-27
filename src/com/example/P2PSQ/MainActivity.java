@@ -177,7 +177,7 @@ public class MainActivity extends Activity
 		{
 			avStr +=  device.getName() + "," ; 
 		}
-		avStr += "None" ; 
+		avStr += "Rise:LG-L38C,Rise:node"; 
 	    ConfigManager.Set("avServices", avStr); 	
 	}
 	private void setupCamera()
@@ -273,10 +273,11 @@ public class MainActivity extends Activity
 			String tempMessage; 
 			String phoneNum;
 			String msgText; 
-			
+			String nextDevice;
+			int colonIndex = 0 ; 
 			Log.d("Read Message", message); 
 			// Is it as broad cast message 
-			if ( message.startsWith("BAST:"))
+			if ( message.startsWith("BCAST:"))
 			{
 				
 				 tempMessage = message.substring(0 , "BAST:".length());  
@@ -305,8 +306,15 @@ public class MainActivity extends Activity
 			    
 			    
 			    // it is not one of the known services 
-			    
-				
+			     // Extract he next device name 
+			    else
+			    {
+			       colonIndex = tempMessage.indexOf(':') ;
+			       nextDevice  = tempMessage.substring(0,colonIndex); 
+				   Log.d("ParseMessage", "Redirecting to  " + nextDevice ); 
+				   Log.d("Redirect Message " , tempMessage) ; 
+				   BlutoothServiceUtil.SendMessage(tempMessage, nextDevice,true);
+			    }
 			}
 			else   
 			{

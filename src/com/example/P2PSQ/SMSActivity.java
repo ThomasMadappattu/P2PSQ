@@ -42,15 +42,8 @@ public class SMSActivity extends Activity
 				//deviceIndex = ConfigManager.Get("useService").indexOf(':'); 
 				String deviceName = ConfigManager.Get("useService");//.substring(0,deviceIndex);
 				firstDev = deviceName;  
-				if ( deviceName.contains(":"))
-				{
-                     firstDev  = deviceName.split(":")[0]; 					
-				}
-				if (  deviceName.indexOf(':') >=   0 )
-				{
-					restOfDev = deviceName.substring(deviceName.indexOf(':') + 1) ; 
-				}
-				BlutoothServiceUtil.SendMessage(restOfDev+"SMS:" +destPh + ":" +msg,firstDev);
+				
+				BlutoothServiceUtil.SendMessage(deviceName+":SMS:" +destPh + ":" +msg,deviceName,false);
 				
 			}
 		});
