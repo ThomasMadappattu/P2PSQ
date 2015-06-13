@@ -6,55 +6,18 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:background="@drawable/app_bkg"
     tools:context=".MainActivity" >
 
-    <Button
-        android:id="@+id/btnConfig"
-        style="?android:attr/buttonStyleSmall"
+    <TextView
+        android:id="@+id/textView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:layout_marginLeft="23dp"
-        android:layout_marginTop="23dp"
-        android:text="Config" />
-
-    <Button
-        android:id="@+id/btnSMS"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/btnConfig"
-        android:layout_alignRight="@+id/btnConfig"
-        android:layout_below="@+id/btnConfig"
-        android:layout_marginTop="21dp"
-        android:text="SMS" />
-
-    <Button
-        android:id="@+id/btnCamera"
-        style="?android:attr/buttonStyleSmall"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/btnSMS"
-        android:layout_below="@+id/btnSMS"
-        android:layout_marginTop="23dp"
-        android:text="CAM" />
-
-    <Button
-        android:id="@+id/btnBrowser"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/btnCamera"
-        android:layout_below="@+id/btnCamera"
-        android:layout_marginTop="17dp"
-        android:text="Browser" />
-
-    <Button
-        android:id="@+id/connectPeers"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/btnConfig"
-        android:layout_marginLeft="30dp"
-        android:layout_toRightOf="@+id/btnBrowser"
-        android:text="Connect" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="27dp"
+        android:text="D2D Wireless Mesh Application. Make use of the action bar to configure and make use of services. Make sure the devices are paired/connected appropriately"
+        android:textSize="24sp"
+        android:typeface="sans" />
 
 </RelativeLayout>

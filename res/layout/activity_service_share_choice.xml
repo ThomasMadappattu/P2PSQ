@@ -6,49 +6,87 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:background="@drawable/app_bkg"
     tools:context=".ServiceShareChoiceActivity" >
 
     <CheckBox
         android:id="@+id/smsCheckBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
+        android:layout_alignLeft="@+id/spAvServices"
         android:layout_alignParentTop="true"
-        android:layout_marginLeft="40dp"
-        android:layout_marginTop="78dp"
         android:text="SMS" />
+
+    <TextView
+        android:id="@+id/wifiIPtextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/spAvServices"
+        android:layout_marginTop="23dp"
+        android:layout_toLeftOf="@+id/cameraCheckBox"
+        android:text="Wifi Direct IP" />
+
+    <TextView
+        android:id="@+id/wifiDirectPorttextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/wifiIPtextView"
+        android:layout_below="@+id/wifiIPtextView"
+        android:layout_marginTop="72dp"
+        android:text="Wifi Port" />
+
+    <EditText
+        android:id="@+id/editText2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/wifiDirectPorttextView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:ems="10" >
+
+        <requestFocus />
+    </EditText>
+
+    <Button
+        android:id="@+id/doneButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/internetCheckbox"
+        android:layout_below="@+id/editText2"
+        android:layout_marginTop="32dp"
+        android:text="Done" />
+
+    <Spinner
+        android:id="@+id/spAvServices"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/wifiIPtextView"
+        android:layout_below="@+id/smsCheckBox"
+        android:layout_marginTop="25dp" />
 
     <CheckBox
         android:id="@+id/cameraCheckBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/smsCheckBox"
-        android:layout_below="@+id/smsCheckBox"
-        android:layout_marginTop="20dp"
+        android:layout_above="@+id/spAvServices"
+        android:layout_centerHorizontal="true"
         android:text="Camera" />
 
     <CheckBox
         android:id="@+id/internetCheckbox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/cameraCheckBox"
-        android:layout_below="@+id/cameraCheckBox"
-        android:layout_marginTop="20dp"
+        android:layout_alignLeft="@+id/smsCheckBox"
+        android:layout_below="@+id/smsCheckBox"
         android:text="Internet" />
 
-    <Spinner
-        android:id="@+id/spAvServices"
+    <EditText
+        android:id="@+id/wifiIPeditText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/internetCheckbox"
-        android:layout_centerHorizontal="true" />
-
-    <Button
-        android:id="@+id/doneButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/spAvServices"
-        android:layout_alignParentRight="true"
-        android:text="Done" />
+        android:layout_below="@+id/wifiIPtextView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="19dp"
+        android:ems="10" />
 
 </RelativeLayout>
