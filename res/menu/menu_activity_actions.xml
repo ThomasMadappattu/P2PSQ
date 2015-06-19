@@ -14,4 +14,32 @@
              android:title="@string/action_sms"
           
           />
+       
+       
+       
+    <item
+        android:id="@+id/send_image"
+        android:title="@string/send_image"
+       
+        />
+    
+    <item
+        android:id="@+id/send_file"
+        android:title="@string/send_file"
+        
+         />
+    
+    <item 
+        android:id="@+id/send_audio"
+        android:title="@string/send_audio"
+        
+         />
+    
+	<item 
+        android:id="@+id/send_video"
+        android:title="@string/send_video"
+        
+        />
+       
+       
 </menu>
