@@ -1,7 +1,6 @@
 package com.d2dsq.ui;
 
 import com.d2dsq.utils.ConfigManager;
-import com.example.P2PSQ.BlutoothServiceUtil;
 import com.example.test123.R;
 import com.example.test123.R.layout;
 import com.example.test123.R.menu;
@@ -45,7 +44,7 @@ public class SMSActivity extends Activity
 				String deviceName = ConfigManager.Get("useService");//.substring(0,deviceIndex);
 				firstDev = deviceName;  
 				
-				BlutoothServiceUtil.SendMessage(deviceName+":SMS:" +destPh + ":" +msg,deviceName,false);
+				
 				
 			}
 		});

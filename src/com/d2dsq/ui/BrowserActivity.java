@@ -1,6 +1,6 @@
 package com.d2dsq.ui;
 
-import com.example.P2PSQ.PageViewClient;
+
 import com.example.test123.R;
 import com.example.test123.R.layout;
 import com.example.test123.R.menu;

@@ -2,9 +2,6 @@ package com.d2dsq.ui;
 
 import com.d2dsq.baseservices.SmsUtil;
 import com.d2dsq.utils.ConfigManager;
-import com.example.P2PSQ.BloothServiceHandler;
-import com.example.P2PSQ.BlutoothServiceUtil;
-import com.example.P2PSQ.CameraPreview;
 import com.example.test123.R;
 
 import android.os.Bundle;
@@ -45,8 +42,7 @@ public class MainActivity extends Activity
 	
 	Camera camera = null;
 	int cameraId = -1;
-	CameraPreview mPreview;
-
+	
 	// ArrayAdapter<String> mArrayAdapter = new ArrayAdapter<String>();
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -196,8 +192,8 @@ public class MainActivity extends Activity
 			{
 				
 				 tempMessage = message.substring(0 , "BAST:".length());  
-			     BlutoothServiceUtil.AddPeers(tempMessage);
-			     ConfigManager.Set("avServices",BlutoothServiceUtil.GetPeerString());
+			  
+			
 				 
 			}		
 			
@@ -228,7 +224,7 @@ public class MainActivity extends Activity
 			       nextDevice  = tempMessage.substring(0,colonIndex); 
 				   Log.d("ParseMessage", "Redirecting to  " + nextDevice ); 
 				   Log.d("Redirect Message " , tempMessage) ; 
-				   BlutoothServiceUtil.SendMessage(tempMessage, nextDevice,true);
+				
 			    }
 			}
 			else   
@@ -247,62 +243,7 @@ public class MainActivity extends Activity
 		@Override
 		public void handleMessage(Message msg)
 		{
-			switch (msg.what)
-			{
-			case BloothServiceHandler.MESSAGE_STATE_CHANGE:
-
-				switch (msg.arg1)
-				{
-				case BloothServiceHandler.STATE_CONNECTED:
-
-					break;
-				case BloothServiceHandler.STATE_CONNECTING:
-
-					break;
-				case BloothServiceHandler.STATE_LISTEN:
-				case BloothServiceHandler.STATE_NONE:
-
-					break;
-				}
-				break;
-			case BloothServiceHandler.MESSAGE_WRITE:
-				
-				byte[] writeBuf = (byte[]) msg.obj;
-				// construct a string from the buffer
-				String writeMessage = new String(writeBuf);
-				/*
-				// mConversationArrayAdapter.add("Me:  " + writeMessage);
-				// Toast.makeText(null,"sending sms to  " +
-				// writeMessage.split(":")[0] , Toast.LENGTH_SHORT).show();
-				Log.d("Hanlder", "sending sms to  "
-						+ writeMessage.split(":")[0]);
-				SmsUtil.SendSms(writeMessage.split(":")[0], writeMessage);
-				*/
-				Log.d("Message Written" ,writeMessage );
-				break;
-			case BloothServiceHandler.MESSAGE_READ:
-				byte[] readBuf = (byte[]) msg.obj;
-				// construct a string from the valid bytes in the buffer
-				
-				String readMessage = new String(readBuf, 0, msg.arg1);
-				Log.d("Message Read:" , readMessage);
-				ParseMessage(readMessage); 
-				
-								
-				//Log.d("Hanlder", "sending sms to  " + readMessage.split(":")[0]);
-				//SmsUtil.SendSms(readMessage.split(":")[0], readMessage);
-				// mConversationArrayAdapter.add(mConnectedDeviceName + ":  "
-				// + readMessage);
-				break;
-			case BloothServiceHandler.MESSAGE_DEVICE_NAME:
-
-				break;
-			case BloothServiceHandler.MESSAGE_TOAST:
-				Toast.makeText(getApplicationContext(),
-						msg.getData().getString("toast"), Toast.LENGTH_SHORT)
-						.show();
-				break;
-			}
+			
 		}
 	};
 	
