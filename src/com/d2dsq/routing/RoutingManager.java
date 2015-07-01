@@ -1,13 +1,16 @@
 package com.d2dsq.routing;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Set;
 
 public class RoutingManager
 {
 
 	   private HashMap routeMap; 
-	   private Set<String> neighbours;
+	   private Set<Node> neighbours = new HashSet();
+	   
+	   public static RoutingManager theRouter = new RoutingManager(); 
 	   
 	   public void addRoute(String destination, String path)
 	   {
@@ -18,7 +21,7 @@ public class RoutingManager
 	   public void addRoute(Node node, String path)
 	   {
 		   
-		   routeMap.put(node.nodeName, path);
+		   routeMap.put(node.getNodeName(), path);
 		   
 	   }
 	   
@@ -45,7 +48,7 @@ public class RoutingManager
 		   return neighbours.contains(nodeName);
 	   }
 	   
-	   public void addNeighbour(String node)
+	   public void addNeighbour(Node node)
 	   {
 		   
 		   neighbours.add(node); 

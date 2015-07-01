@@ -23,6 +23,8 @@ import android.hardware.Camera.CameraInfo;
 import android.bluetooth.*;
 import java.io.*;
 
+import com.d2dsq.radio.*;
+import com.d2dsq.routing.*;
 
 public class MainActivity extends Activity
 {
@@ -50,9 +52,111 @@ public class MainActivity extends Activity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
         Log.d("MainActivity", "onCreate"); 
+        DoInitiliazation(); 
 			
 	}
 
+	private void DoInitiliazation()
+	{
+		
+		BluetoothUtil.init(); 
+		
+		// Fetch all the peered devices 
+		
+		for ( String s : BluetoothUtil.GetPeerNames() )
+		{
+			Log.e("MainActivity - Bluetooth", s ); 
+			
+		}
+		
+	    for ( BluetoothDevice dev : BluetoothUtil.pairedDevices)
+	    {
+	    	
+	    	Node node = new Node(); 
+	    	node.setBluetoothNode(false);
+	    	node.setWifiNode(true);
+	    	node.setDevice(dev);
+	    	node.setNodeName(dev.getName()); 
+	    	RoutingManager.theRouter.addNeighbour(node); 
+	    	
+	    }
+		
+		WifiUtil.init(getApplicationContext()); 
+		for ( String s:  WifiUtil.GetPeerNames())
+		{
+			Log.e("MainActivity - Wifi" , s);
+			
+			
+		}
+		
+		
+		// Set up default Configuration items 
+	
+		
+		// Start all deamons 
+				
+		
+		// Starting Bluetooth server thread 
+		
+		
+		
+		// Starting Wifi server thread 
+				
+		
+		//MainApplication.serverThread.start();
+		
+		
+		
+		
+		
+	}
+	
+	private void StartBluetoothServer()
+	{
+		
+		MainApplication.serverHandler = new Handler(){
+			
+			
+			@Override
+			public void handleMessage(Message message)
+			{
+				
+			
+			
+				switch (message.what) 
+				{
+				    case  MessageType.DATA_RECEIVED: 
+				    	Toast.makeText(MainActivity.this, "We got something ..  ", Toast.LENGTH_SHORT).show();
+
+						break;
+						
+					case MessageType.DIGEST_DID_NOT_MATCH: 
+						break;
+					
+					case MessageType.DATA_PROGRESS_UPDATE: 
+	                    break; 
+	                    
+					case MessageType.INVALID_HEADER: 
+						Toast.makeText(MainActivity.this, "Invalid header ..  ", Toast.LENGTH_SHORT).show();
+						break;
+				}
+                     
+
+			
+			
+			
+			}
+
+
+		};	
+		
+		
+		
+		
+				
+		
+	}
+	
 	private void initServicesList()
 	{
 		String avStr=""; 

@@ -1,6 +1,10 @@
 package com.d2dsq.radio;
 
+import java.util.LinkedList;
 import java.util.List;
+
+import com.d2dsq.routing.Node;
+import com.d2dsq.routing.RoutingManager;
 
 import android.content.Context;
 import android.util.Log;
@@ -9,12 +13,13 @@ public class WifiUtil
 {
 	  public  static WifiDLite wifiDLite = WifiDLite.getInstance();
       public  static List<Peer> wifiPeers; 
-	  public static  List<String> wifiPeerNames; 
+	  public static  List<String> wifiPeerNames  = new LinkedList<String>();  
 	  
       public static void  init(Context context)
       {
     	  wifiDLite.initialize(context, new DefaultConfiguration()); 
-    	  
+    	  wifiPeers = new LinkedList<Peer>(); 
+    	  wifiPeerNames = new LinkedList<String>(); 
       }
       
       public static void GetPeers()
@@ -29,6 +34,14 @@ public class WifiUtil
     		        for ( Peer p : peers)
     		        {
     		        	wifiPeers.add(p); 
+    		        	Log.v("WifiUtil - Name",p.getWifiP2pDevice().deviceName );
+    		        	
+    		        	Node node = new Node(); 
+    			    	node.setWifiNode(true);
+    			    	node.setBluetoothNode(false);
+    			    	node.setWifiDevice(p);
+    			    	node.setNodeName(p.getWifiP2pDevice().deviceName); 
+    			    	RoutingManager.theRouter.addNeighbour(node); 
     		        	
     		        }
     		        
@@ -40,7 +53,7 @@ public class WifiUtil
       public static List<String> GetPeerNames()
       {
     	  GetPeers(); 
-    	  wifiPeerNames.clear(); 
+    	  
     	  for (Peer p : wifiPeers)
     	  {
     		  wifiPeerNames.add( p.getWifiP2pDevice().deviceName); 

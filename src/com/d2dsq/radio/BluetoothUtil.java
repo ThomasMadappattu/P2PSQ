@@ -3,15 +3,23 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.util.Log;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set; 
 public class BluetoothUtil
 {
 
 	private static final String TAG = "d2dsq/BluetoothUtil";
-	static Set<BluetoothDevice> pairedDevices;
+	public  static Set<BluetoothDevice> pairedDevices;
 	static BluetoothAdapter adapter;
-	static List<String> peerNames; 
+	static List<String> peerNames  = new LinkedList<String>(); ; 
+	
+	public static void init()
+	{
+		peerNames = new LinkedList<String>(); 
+		adapter = BluetoothAdapter.getDefaultAdapter(); 
+		
+	}
 	
 	public static void   GetPairedDevices()
 	{
@@ -39,7 +47,7 @@ public class BluetoothUtil
 	{
 		
 		GetPairedDevices(); 
-		peerNames.clear();
+		
 		for (BluetoothDevice d : pairedDevices)
 		{
 			if ( d.getName() != null )
