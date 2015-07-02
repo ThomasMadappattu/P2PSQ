@@ -97,7 +97,7 @@ public class MainActivity extends Activity
 				
 		
 		// Starting Bluetooth server thread 
-		
+		StartBluetoothServer(); 
 		
 		
 		// Starting Wifi server thread 
@@ -146,12 +146,14 @@ public class MainActivity extends Activity
 			
 			
 			}
-
+             
+			
 
 		};	
 		
 		
-		
+		MainApplication.serverThread = new ServerThread(BluetoothUtil.adapter, MainApplication.serverHandler)	;
+		MainApplication.serverThread.start(); 
 		
 				
 		
@@ -258,6 +260,9 @@ public class MainActivity extends Activity
 	    // Handle presses on the action bar items
 	    switch (item.getItemId()) {
 	        case R.id.action_config:
+	        	
+	        	// TESTING !! 
+	        	BluetoothUtil.SendData( "foo".getBytes(), (BluetoothDevice)BluetoothUtil.pairedDevices.toArray()[0]); 
 	        	Intent intent = new Intent(this, ServiceShareChoiceActivity.class);
 	        	startActivity(intent); 
 	            break; 

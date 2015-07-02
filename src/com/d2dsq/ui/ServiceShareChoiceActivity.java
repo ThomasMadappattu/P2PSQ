@@ -89,7 +89,7 @@ public class ServiceShareChoiceActivity extends Activity
 				ConfigManager.Set("sharedServices", configString);
 				ConfigManager.Set("useService", serviceSpinner
 						.getSelectedItem().toString());
-				Quit();
+					Quit();
 			}
 		});
 	}

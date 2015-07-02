@@ -11,6 +11,8 @@ import android.util.Log;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.UUID;
 
 @SuppressLint("HandlerLeak")
@@ -25,11 +27,15 @@ public class ClientThread extends Thread {
         this.handler = handler;
 
         try {
-            tempSocket = device.createRfcommSocketToServiceRecord(UUID.fromString(Constants.UUID_STRING));
+        	// Method m = device.getClass().getMethod("createInsecureRfcommSocket", new Class[] {int.class});
+        	
+        	tempSocket =  device.createInsecureRfcommSocketToServiceRecord(UUID.fromString(Constants.UUID_STRING));;
+        	
         } catch (Exception e) {
             Log.e(TAG, e.toString());
         }
         this.socket = tempSocket;
+       
     }
 
     public void run() {
@@ -41,11 +47,12 @@ public class ClientThread extends Thread {
         } catch (IOException ioe) {
             handler.sendEmptyMessage(MessageType.COULD_NOT_CONNECT);
             Log.e(TAG, ioe.toString());
-            try {
-                socket.close();
-            } catch (IOException ce) {
-                Log.e(TAG, "Socket close exception: " + ce.toString());
-            }
+            // Try the fall back methods now 
+           
+            
+            
+            Log.e(TAG, "Trying fall back");
+            
         }
 
         Looper.prepare();
