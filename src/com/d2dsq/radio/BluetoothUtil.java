@@ -102,6 +102,8 @@ public class BluetoothUtil
 	}
 	
 	
+	
+	
 	public static void SendData(byte[] data, BluetoothDevice dev )
 	{
 		
@@ -109,7 +111,11 @@ public class BluetoothUtil
 		cThread.start(); 
 		Log.v("BluetoothUtil.SendData : ", dev.getName()) ;
 		msg.obj = data; 
+		// Wait till connection is established 
 		
+		while ( !cThread.hasConnectionEstablished() ); 
+		cThread.incomingHandler.sendMessage(msg); 
+         
 		
 	}
 	

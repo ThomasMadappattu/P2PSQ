@@ -13,7 +13,7 @@ public class WifiUtil
 {
 	  public  static WifiDLite wifiDLite = WifiDLite.getInstance();
       public  static List<Peer> wifiPeers; 
-	  public static  List<String> wifiPeerNames  = new LinkedList<String>();  
+	  public  static  List<String> wifiPeerNames  = new LinkedList<String>();  
 	  
       public static void  init(Context context)
       {
@@ -41,6 +41,7 @@ public class WifiUtil
     			    	node.setBluetoothNode(false);
     			    	node.setWifiDevice(p);
     			    	node.setNodeName(p.getWifiP2pDevice().deviceName); 
+    			    	node.setMacAddress(p.getWifiP2pDevice().deviceAddress); 
     			    	RoutingManager.theRouter.addNeighbour(node); 
     		        	
     		        }
@@ -60,6 +61,13 @@ public class WifiUtil
     	     
     	  }
     	  return wifiPeerNames; 
+    	  
+      }
+      
+      public static boolean isWifiEnabled()
+      {
+    	  
+    	  return wifiDLite.isWifiP2pEnabled(); 
     	  
       }
 

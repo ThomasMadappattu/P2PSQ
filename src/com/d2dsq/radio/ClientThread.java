@@ -21,7 +21,7 @@ public class ClientThread extends Thread {
     private final BluetoothSocket socket;
     private final Handler handler;
     public Handler incomingHandler;
-
+    private volatile boolean  isConnectionEstablished;   
     public ClientThread(BluetoothDevice device, Handler handler) {
         BluetoothSocket tempSocket = null;
         this.handler = handler;
@@ -35,7 +35,14 @@ public class ClientThread extends Thread {
             Log.e(TAG, e.toString());
         }
         this.socket = tempSocket;
+        isConnectionEstablished = false; 
        
+    }
+    
+    public boolean hasConnectionEstablished()
+    {
+    	
+    	return isConnectionEstablished; 
     }
 
     public void run() {
@@ -43,6 +50,7 @@ public class ClientThread extends Thread {
             Log.v(TAG, "Opening client socket");
             socket.connect();
             Log.v(TAG, "Connection established");
+            isConnectionEstablished = true; 
 
         } catch (IOException ioe) {
             handler.sendEmptyMessage(MessageType.COULD_NOT_CONNECT);

@@ -14,6 +14,7 @@ public class Node
 	
 	boolean isWifiNode;
     boolean isBluetoothNode; 
+    String macAddress;
     
 	// Device specific items 
 	
@@ -21,6 +22,17 @@ public class Node
    Peer wifiDevice; 
    
 	
+   public void setMacAddress(String val)
+   {
+	   macAddress = val; 
+   }
+   
+   public String getMacAddress()
+   {
+	   
+	   return macAddress; 
+   }
+   
 	public String getNodeName()
 	{
 		return nodeName;

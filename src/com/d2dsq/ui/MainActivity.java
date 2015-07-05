@@ -39,7 +39,7 @@ public class MainActivity extends Activity
 	private Button browserButton;
     private Button connectButton; 
 	int REQUEST_ENABLE_BT = 3;
-	
+	private static final String TAG="MainActivity"; 
 	
 	
 	Camera camera = null;
@@ -101,7 +101,9 @@ public class MainActivity extends Activity
 		
 		
 		// Starting Wifi server thread 
-				
+		StartWifiServer(); 
+		 
+		
 		
 		//MainApplication.serverThread.start();
 		
@@ -109,6 +111,35 @@ public class MainActivity extends Activity
 		
 		
 		
+	}
+	
+	private void StartWifiServer()
+	{
+		
+		WifiServerThread th = new WifiServerThread(4453,MainApplication.packetQueue); 
+		Thread wifiServerThread = new Thread(th); 
+		if (WifiUtil.isWifiEnabled())
+		{
+			
+			Log.v(TAG, "Staring wifi Server Thread"); 
+			wifiServerThread.start(); 
+			
+			
+		}
+		
+		
+	}
+	
+	
+	private void testSendPacket()
+	{
+		Packet p = new Packet(null, null, null, null);
+		p.setData("Hello".getBytes());
+        p.setMac(((Peer)WifiUtil.wifiPeers.toArray()[0]).getWifiP2pDevice().deviceAddress);
+		
+		
+		
+		  
 	}
 	
 	private void StartBluetoothServer()
@@ -263,6 +294,10 @@ public class MainActivity extends Activity
 	        	
 	        	// TESTING !! 
 	        	BluetoothUtil.SendData( "foo".getBytes(), (BluetoothDevice)BluetoothUtil.pairedDevices.toArray()[0]); 
+	        	// Wifi Testing 
+	        	
+	        	
+	        	
 	        	Intent intent = new Intent(this, ServiceShareChoiceActivity.class);
 	        	startActivity(intent); 
 	            break; 
