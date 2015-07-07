@@ -61,6 +61,7 @@ public class WifiServerThread implements Runnable {
 				byte trimmedBytes[] = baos.toByteArray();
 				Packet p = Packet.deserialize(trimmedBytes);
 				p.setSenderIP(socket.getInetAddress().getHostAddress());
+				Log.v(TAG,"Got something "); 
 				this.packetQueue.add(p);
 				socket.close();
 			} catch (IOException e) {

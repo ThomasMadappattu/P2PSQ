@@ -133,10 +133,15 @@ public class MainActivity extends Activity
 	
 	private void testSendPacket()
 	{
+		
+	
 		Packet p = new Packet(null, null, null, null);
 		p.setData("Hello".getBytes());
         p.setMac(((Peer)WifiUtil.wifiPeers.toArray()[0]).getWifiP2pDevice().deviceAddress);
-		
+	    
+        WifiClientThread wi = new WifiClientThread();
+        
+        wi.sendPacket(((Peer)WifiUtil.wifiPeers.toArray()[0]).getWifiP2pDevice().deviceAddress, 4453, p); 
 		
 		
 		  
@@ -190,85 +195,9 @@ public class MainActivity extends Activity
 		
 	}
 	
-	private void initServicesList()
-	{
-		String avStr=""; 
-		for ( BluetoothDevice device : bluetooth.getBondedDevices())
-		{
-			avStr +=  device.getName() + "," ; 
-		}
-		avStr += "Rise:LG-L38C,Rise:node"; 
-	    ConfigManager.Set("avServices", avStr); 	
-	}
-	private void setupCamera()
-	{
-		int numberOfCameras = Camera.getNumberOfCameras();
-		for (int i = 0; i < numberOfCameras; i++)
-		{
-			CameraInfo info = new CameraInfo();
-			Camera.getCameraInfo(i, info);
-			if (info.facing == CameraInfo.CAMERA_FACING_BACK)
-			{
-				Log.d("P2PSQ", "Camera found");
-				cameraId = i;
+	
 
-				break;
-			}
-		}
-
-		if (cameraId >= 0)
-		{
-
-			Log.d("Camera: ", "Camera Opened ! ");
-			camera = Camera.open(cameraId);
-			if (camera == null)
-				Log.d("Camera: ", "Unable to open camera ");
-
-			/*
-			 * Intent browserIntent = new
-			 * Inent(getApplicationContext(),BrowserActivity.class);
-			 * startActivity(browserIntent); mPreview = new CameraPreview(this,
-			 * camera); FrameLayout preview = (FrameLayout)
-			 * findViewById(R.id.layout2); preview.addView(mPreview);
-			 */
-			camera.startPreview();
-			/*
-			 * mPreview = new CameraPreview(this, camera); FrameLayout preview =
-			 * (FrameLayout) findViewById(R.id.layout2);
-			 * preview.addView(mPreview);
-			 */
-		}
-
-	}
-
-	private void sendMessage(String message)
-	{
-		// Check that we're actually connected before trying anything
-		
-		/*
-		if (btServer.getState() != BloothServiceHandler.STATE_CONNECTED)
-		{
-			Toast.makeText(this, "sendMesssage:not connected",
-					Toast.LENGTH_SHORT).show();
-			return;
-		}
-        */ 
-		// Check that there's actually something to send
-		if (message.length() > 0)
-		{
-
-			// XXX !!!
-			message = message + "\r\n"; // terminate for pc bluetooth spp server
-
-			// Get the message bytes and tell the BluetoothChatService to write
-			byte[] send = message.getBytes();
-			// btServer.write(send);
-
-			// Reset out string buffer to zero and clear the edit text field
-
-			// mOutEditText.setText(mOutStringBuffer);
-		}
-	}
+	
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu)
@@ -281,10 +210,6 @@ public class MainActivity extends Activity
 		
 	}
 
-	private void configBluetooth()
-	{
-		this.bluetooth = BluetoothAdapter.getDefaultAdapter();
-	}
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -293,9 +218,9 @@ public class MainActivity extends Activity
 	        case R.id.action_config:
 	        	
 	        	// TESTING !! 
-	        	BluetoothUtil.SendData( "foo".getBytes(), (BluetoothDevice)BluetoothUtil.pairedDevices.toArray()[0]); 
+	        	//BluetoothUtil.SendData( "foo".getBytes(), (BluetoothDevice)BluetoothUtil.pairedDevices.toArray()[0]); 
 	        	// Wifi Testing 
-	        	
+	        	testSendPacket();
 	        	
 	        	
 	        	Intent intent = new Intent(this, ServiceShareChoiceActivity.class);
@@ -318,77 +243,5 @@ public class MainActivity extends Activity
 	    return true; 
 	}
 
-	private final Handler mHandler = new Handler()
-	{
-		
-		
-		private void ParseMessage(String message)
-		{
-			
-			String tempMessage; 
-			String phoneNum;
-			String msgText; 
-			String nextDevice;
-			int colonIndex = 0 ; 
-			Log.d("Read Message", message); 
-			// Is it as broad cast message 
-			if ( message.startsWith("BCAST:"))
-			{
-				
-				 tempMessage = message.substring(0 , "BAST:".length());  
-			  
-			
-				 
-			}		
-			
-			// if the given message is intended for this device 
-			else if (message.startsWith(bluetooth.getName()))
-			{
-			    tempMessage = message.substring(bluetooth.getName().length()+1); 
-			    Log.d("tempMessage" , tempMessage);
-			    
-			    // See if the we need to provide one of the services 
-			    if (tempMessage.startsWith("SMS"))
-			    {
-			    	tempMessage = tempMessage.substring("SMS".length() +1 );
-			        phoneNum = tempMessage.split(":")[0];
-			        msgText = tempMessage.split(":")[1]; 
-			        Log.d("MainActivity" , "Trying to send sms ..."); 
-			        Log.d("Phone num =" ,phoneNum);
-			        Log.d("Msg Text = " , msgText); 
-			    	SmsUtil.SendSms(phoneNum, msgText); 
-			    }
-			    
-			    
-			    // it is not one of the known services 
-			     // Extract he next device name 
-			    else
-			    {
-			       colonIndex = tempMessage.indexOf(':') ;
-			       nextDevice  = tempMessage.substring(0,colonIndex); 
-				   Log.d("ParseMessage", "Redirecting to  " + nextDevice ); 
-				   Log.d("Redirect Message " , tempMessage) ; 
-				
-			    }
-			}
-			else   
-			{
-				
-	                // We are receving some garbage from somewhere handle is here 
-				    Log.d(" Unknown Meassed Read :" , message);
-				
-			}
-			
-			//if (message.matches(bl)
-			
-			
-		}
-		
-		@Override
-		public void handleMessage(Message msg)
-		{
-			
-		}
-	};
 	
 }
