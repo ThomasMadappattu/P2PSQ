@@ -1,4 +1,4 @@
-package com.example.HttpServer;
+package com.d2dsq.baseservices;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
