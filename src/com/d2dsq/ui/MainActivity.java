@@ -31,6 +31,7 @@ public class MainActivity extends Activity
 
 	private BluetoothAdapter bluetooth;
 	private BluetoothSocket socket;
+	public static boolean isWifiServer = false; 
 	BluetoothDevice pairedDevice = null;
 	private UUID uuid = UUID.fromString("a60f35f0-b93a-11de-8a39-08002009c666");
 	private Button configButton;
