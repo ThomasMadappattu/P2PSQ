@@ -111,7 +111,7 @@ public class RecordAudioActivity extends Activity {
 	public void startRecording(){
 		mRecorder = new MediaRecorder();
 		mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-		mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+		mRecorder.setOutputFormat(MediaRecorder.OutputFormat.AMR_NB);
 		mRecorder.setOutputFile(mFileName);
 		mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
 		

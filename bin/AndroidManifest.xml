@@ -58,6 +58,24 @@
             android:name="com.d2dsq.ui.BrowserActivity"
             android:label="@string/title_activity_browser" >
         </activity>
+         <activity
+            android:name="com.d2dsq.ui.ChatActivity"
+            android:label="@string/title_activity_chat" >
+        </activity>
+        <activity
+            android:name="com.d2dsq.ui.PlayVideoActivity"
+            android:label="@string/title_activity_play_video" >
+        </activity>
+        <activity
+            android:name="com.d2dsq.ui.RecordAudioActivity"
+            android:label="@string/title_activity_record_audio" >
+        </activity> 
+         <activity
+            android:name="com.d2dsq.ui.FilePickerActivity"
+            android:label="@string/title_activity_file_picker" >
+        </activity> 
+        
+        
     </application>
 
 </manifest>

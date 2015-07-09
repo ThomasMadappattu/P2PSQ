@@ -5,6 +5,12 @@
           android:title="@string/action_config"
           
           />
+        <item android:id="@+id/action_chat"
+          android:icon="@drawable/ic_action_settings"
+          android:title="@string/action_chat"
+          
+          />
+       
        <item android:id="@+id/action_browser"
           android:icon="@drawable/ic_action_settings"
           android:title="@string/action_browser"
@@ -17,29 +23,6 @@
        
        
        
-    <item
-        android:id="@+id/send_image"
-        android:title="@string/send_image"
-       
-        />
-    
-    <item
-        android:id="@+id/send_file"
-        android:title="@string/send_file"
-        
-         />
-    
-    <item 
-        android:id="@+id/send_audio"
-        android:title="@string/send_audio"
-        
-         />
-    
-	<item 
-        android:id="@+id/send_video"
-        android:title="@string/send_video"
-        
-        />
-       
+
        
 </menu>

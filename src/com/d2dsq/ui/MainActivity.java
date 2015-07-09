@@ -221,12 +221,17 @@ public class MainActivity extends Activity
 	        	// TESTING !! 
 	        	//BluetoothUtil.SendData( "foo".getBytes(), (BluetoothDevice)BluetoothUtil.pairedDevices.toArray()[0]); 
 	        	// Wifi Testing 
-	        	testSendPacket();
+	        	//  testSendPacket();
 	        	
 	        	
 	        	Intent intent = new Intent(this, ServiceShareChoiceActivity.class);
 	        	startActivity(intent); 
 	            break; 
+	        case R.id.action_chat:
+	        	Intent chatIntent = new Intent ( this , ChatActivity.class); 
+	        	startActivity(chatIntent); 
+	         	break;
+	 
 	        case R.id.action_browser:
 	        	Intent browserIntent = new Intent(this, BrowserActivity.class);
 	        	startActivity(browserIntent); 

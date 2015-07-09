@@ -350,7 +350,7 @@ public class ChatActivity extends Activity {
 	
 	@Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_activity_actions, menu);
+        getMenuInflater().inflate(R.menu.menu_chat_activity, menu);
         return true;
     }
 
@@ -422,7 +422,7 @@ public class ChatActivity extends Activity {
 				return true;
 			}
 		});
-        popup.inflate(R.menu.menu_activity_actions);
+        popup.inflate(R.menu.send_image);
         popup.show();
     }
     
