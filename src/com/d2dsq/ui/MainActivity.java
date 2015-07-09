@@ -1,9 +1,14 @@
 package com.d2dsq.ui;
 
+
+
+
 import com.d2dsq.baseservices.SmsUtil;
 import com.d2dsq.utils.ConfigManager;
 import com.example.test123.R;
 
+import android.net.wifi.p2p.WifiP2pManager;
+import android.net.wifi.p2p.WifiP2pManager.Channel;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -26,25 +31,33 @@ import java.io.*;
 import com.d2dsq.radio.*;
 import com.d2dsq.routing.*;
 
+
+
 public class MainActivity extends Activity
 {
 
 	private BluetoothAdapter bluetooth;
 	private BluetoothSocket socket;
-	public static boolean isWifiServer = false; 
+	public static  volatile boolean isWifiServer = false; 
 	BluetoothDevice pairedDevice = null;
 	private UUID uuid = UUID.fromString("a60f35f0-b93a-11de-8a39-08002009c666");
-	private Button configButton;
-	private Button smsButton;
-	private Button camButton;
-	private Button browserButton;
-    private Button connectButton; 
-	int REQUEST_ENABLE_BT = 3;
-	private static final String TAG="MainActivity"; 
 	
+   	int REQUEST_ENABLE_BT = 3;
+	
+	private WifiP2pManager mManager;
+	private Channel mChannel;
+	private WifiDirectBroadcastReceiver mReceiver;
+	private IntentFilter mIntentFilter;
 	
 	Camera camera = null;
 	int cameraId = -1;
+	
+	
+	ServerInit initServer;
+	ClientInit initClient; 
+	private static final String TAG = "MainActivity"; 
+	
+	
 	
 	// ArrayAdapter<String> mArrayAdapter = new ArrayAdapter<String>();
 	@Override
@@ -82,13 +95,7 @@ public class MainActivity extends Activity
 	    	
 	    }
 		
-		WifiUtil.init(getApplicationContext()); 
-		for ( String s:  WifiUtil.GetPeerNames())
-		{
-			Log.e("MainActivity - Wifi" , s);
-			
-			
-		}
+		
 		
 		
 		// Set up default Configuration items 
@@ -101,52 +108,94 @@ public class MainActivity extends Activity
 		StartBluetoothServer(); 
 		
 		
-		// Starting Wifi server thread 
-		StartWifiServer(); 
-		 
+	    
+		MainApplication.wifiMsgHandler = new Handler()
+		{
+			
+			public void handleMessage(Message message)
+			{
+				
+			
+			     
+				if ( message.what == MainApplication.MSG_WIFI_CLIENT )
+				{
+					
+					initClient = new ClientInit(mReceiver.getOwnerAddr()); 
+					initClient.start(); 
+					Log.v(TAG, "Starting wifi client ...... "); 
+				}
+				else if ( message.what == MainApplication.MSG_WIFI_SERVER)
+				{
+					
+					initServer  = new ServerInit();
+					initServer.start(); 
+					Log.v(TAG, "String wifi server ........"); 
+					
+				}
+                     
+
+			
+			
+			
+			}
+             
+			
+		}; 
+		
+		
+		// Initializing Wifi Direct 
+		
+		mManager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
+        mChannel = mManager.initialize(this, getMainLooper(), null);
+        mReceiver = WifiDirectBroadcastReceiver.createInstance();
+        mReceiver.setmManager(mManager);
+        mReceiver.setmChannel(mChannel);
+        mReceiver.setmActivity(this);
+        
+        mIntentFilter = new IntentFilter();
+        mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
+        mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
+        mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
+        mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
 		
 		
 		//MainApplication.serverThread.start();
 		
-		
-		
-		
-		
-	}
-	
-	private void StartWifiServer()
-	{
-		
-		WifiServerThread th = new WifiServerThread(4453,MainApplication.packetQueue); 
-		Thread wifiServerThread = new Thread(th); 
-		if (WifiUtil.isWifiEnabled())
-		{
-			
-			Log.v(TAG, "Staring wifi Server Thread"); 
-			wifiServerThread.start(); 
-			
-			
-		}
-		
-		
-	}
-	
-	
-	private void testSendPacket()
-	{
-		
-	
-		Packet p = new Packet(null, null, null, null);
-		p.setData("Hello".getBytes());
-        p.setMac(((Peer)WifiUtil.wifiPeers.toArray()[0]).getWifiP2pDevice().deviceAddress);
-	    
-        WifiClientThread wi = new WifiClientThread();
-        
-        wi.sendPacket(((Peer)WifiUtil.wifiPeers.toArray()[0]).getWifiP2pDevice().deviceAddress, 4453, p); 
-		
-		
 		  
+		
+		
+		
 	}
+	
+	@Override
+    public void onResume() 
+	{
+        super.onResume();
+        registerReceiver(mReceiver, mIntentFilter);
+        
+		mManager.discoverPeers(mChannel, new WifiP2pManager.ActionListener() {
+					
+			@Override
+			public void onSuccess() {
+				Log.v(TAG, "Discovery process succeeded");
+			}
+			
+			@Override
+			public void onFailure(int reason) {
+				Log.v(TAG, "Discovery process failed");
+			}
+		});
+    }
+
+    @Override
+    public void onPause() 
+    {
+        super.onPause();
+        unregisterReceiver(mReceiver);
+    }
+
+	
+	
 	
 	private void StartBluetoothServer()
 	{
@@ -218,12 +267,7 @@ public class MainActivity extends Activity
 	    switch (item.getItemId()) {
 	        case R.id.action_config:
 	        	
-	        	// TESTING !! 
-	        	//BluetoothUtil.SendData( "foo".getBytes(), (BluetoothDevice)BluetoothUtil.pairedDevices.toArray()[0]); 
-	        	// Wifi Testing 
-	        	//  testSendPacket();
-	        	
-	        	
+	        		        	
 	        	Intent intent = new Intent(this, ServiceShareChoiceActivity.class);
 	        	startActivity(intent); 
 	            break; 

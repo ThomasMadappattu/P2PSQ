@@ -20,10 +20,15 @@ public class MainApplication extends Application
     protected static Set<BluetoothDevice> pairedDevices;
     protected static Handler clientHandler;
     protected static Handler serverHandler;
+    protected static Handler wifiMsgHandler; 
     protected static ClientThread clientThread;
     protected static ServerThread serverThread;
     protected static ProgressData progressData = new ProgressData();
     protected static  ConcurrentLinkedQueue<Packet> packetQueue = new ConcurrentLinkedQueue<Packet> () ;
 	
+    
+    // Application related constants 
+    public  static final int MSG_WIFI_SERVER = 1; 
+    public  static final int MSG_WIFI_CLIENT = 2; 
 
 }

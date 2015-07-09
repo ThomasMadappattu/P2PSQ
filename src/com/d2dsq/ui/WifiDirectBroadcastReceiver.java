@@ -16,6 +16,7 @@ import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.WifiP2pManager.Channel;
 import android.net.wifi.p2p.WifiP2pManager.ConnectionInfoListener;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -114,7 +115,9 @@ public class WifiDirectBroadcastReceiver extends BroadcastReceiver{
 						******************************************************************/
 						if (info.groupFormed && info.isGroupOwner) { 
 							isGroupeOwner = IS_OWNER;	
-							MainActivity.isWifiServer = true; 
+							Message msg1 = new Message(); 
+							msg1.what = MainApplication.MSG_WIFI_SERVER; 
+						    MainApplication.wifiMsgHandler.sendMessage(msg1); 
 							
 							
 						}
@@ -124,7 +127,9 @@ public class WifiDirectBroadcastReceiver extends BroadcastReceiver{
 						******************************************************************/
 						else if (info.groupFormed) { 
 							isGroupeOwner = IS_CLIENT;		
-							MainActivity.isWifiServer = false ; 
+							Message msg2 = new Message();
+							msg2.what = MainApplication.MSG_WIFI_CLIENT;
+							MainApplication.wifiMsgHandler.sendMessage(msg2); 
 						}	
 					}
 				});				
