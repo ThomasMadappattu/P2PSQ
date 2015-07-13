@@ -117,8 +117,8 @@ public class WifiDirectBroadcastReceiver extends BroadcastReceiver{
 							isGroupeOwner = IS_OWNER;	
 							Message msg1 = new Message(); 
 							msg1.what = MainApplication.MSG_WIFI_SERVER; 
-						    MainApplication.wifiMsgHandler.sendMessage(msg1); 
-							
+						    // MainApplication.wifiMsgHandler.sendMessage(msg1); 
+							// Handle this message later,  ignore it for now 
 							
 						}
 						
@@ -129,7 +129,10 @@ public class WifiDirectBroadcastReceiver extends BroadcastReceiver{
 							isGroupeOwner = IS_CLIENT;		
 							Message msg2 = new Message();
 							msg2.what = MainApplication.MSG_WIFI_CLIENT;
-							MainApplication.wifiMsgHandler.sendMessage(msg2); 
+							
+							// MainApplication.wifiMsgHandler.sendMessage(msg2);
+							
+							// Handle this message later, ignore for now  
 						}	
 					}
 				});				

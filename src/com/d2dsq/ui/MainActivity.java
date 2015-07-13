@@ -3,6 +3,7 @@ package com.d2dsq.ui;
 
 
 
+
 import com.d2dsq.baseservices.SmsUtil;
 import com.d2dsq.utils.ConfigManager;
 import com.example.test123.R;
@@ -109,38 +110,7 @@ public class MainActivity extends Activity
 		
 		
 	    
-		MainApplication.wifiMsgHandler = new Handler()
-		{
-			
-			public void handleMessage(Message message)
-			{
-				
-			
-			     
-				if ( message.what == MainApplication.MSG_WIFI_CLIENT )
-				{
-					
-					initClient = new ClientInit(mReceiver.getOwnerAddr()); 
-					initClient.start(); 
-					Log.v(TAG, "Starting wifi client ...... "); 
-				}
-				else if ( message.what == MainApplication.MSG_WIFI_SERVER)
-				{
-					
-					initServer  = new ServerInit();
-					initServer.start(); 
-					Log.v(TAG, "Strating wifi server ........"); 
-					
-				}
-                     
-
-			
-			
-			
-			}
-             
-			
-		}; 
+		
 		
 		
 		// Initializing Wifi Direct 
@@ -272,6 +242,20 @@ public class MainActivity extends Activity
 	        	startActivity(intent); 
 	            break; 
 	        case R.id.action_chat:
+	        	
+	        	//Start the init process
+				if(mReceiver.isGroupeOwner() ==  WifiDirectBroadcastReceiver.IS_OWNER){
+					Toast.makeText(MainActivity.this, "I'm the group owner  " + mReceiver.getOwnerAddr().getHostAddress(), Toast.LENGTH_SHORT).show();
+					initServer = new ServerInit();
+					initServer.start();
+				}
+				else if(mReceiver.isGroupeOwner() ==  WifiDirectBroadcastReceiver.IS_CLIENT){
+					Toast.makeText(MainActivity.this, "I'm the client", Toast.LENGTH_SHORT).show();
+					ClientInit client = new ClientInit(mReceiver.getOwnerAddr());
+					client.start();
+				}
+				
+	        	
 	        	Intent chatIntent = new Intent ( this , ChatActivity.class); 
 	        	startActivity(chatIntent); 
 	         	break;

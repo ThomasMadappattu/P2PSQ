@@ -19,7 +19,7 @@ public class MessageService extends Service {
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		WifiDirectBroadcastReceiver mReceiver = WifiDirectBroadcastReceiver.createInstance();
-		
+		Log.v(TAG,"Starting Message Service"); 
 		//Start the AsyncTask for the server to receive messages
         if(mReceiver.isGroupeOwner() == WifiDirectBroadcastReceiver.IS_OWNER){
         	Log.v(TAG, "Start the AsyncTask for the server to receive messages");
