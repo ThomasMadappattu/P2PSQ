@@ -40,7 +40,10 @@ import android.widget.Toast;
 
 import com.d2dsq.utils.*;
 import com.d2dsq.models.*;
+import com.d2dsq.routing.*;
 import com.example.test123.*;
+import com.d2dsq.radio.*;
+
 
 public class ChatActivity extends Activity {
 	private static final String TAG = "ChatActivity";	
@@ -59,9 +62,9 @@ public class ChatActivity extends Activity {
 	private WifiP2pManager mManager;
 	private Channel mChannel;
 	
-	/*
+	
 	private WifiDirectBroadcastReceiver mReceiver;
-	*/
+	
 	
 	
 	private IntentFilter mIntentFilter;
@@ -82,10 +85,9 @@ public class ChatActivity extends Activity {
 		mManager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
         mChannel = mManager.initialize(this, getMainLooper(), null);
         
-        /*
         mReceiver = WifiDirectBroadcastReceiver.createInstance();
         mReceiver.setmActivity(this);
-        */
+        
         mIntentFilter = new IntentFilter();
         mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
         mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
@@ -94,9 +96,9 @@ public class ChatActivity extends Activity {
         
         //Start the service to receive message
         
-        /*
+       
         startService(new Intent(this, MessageService.class));
-        */
+        
         
         
         
@@ -141,11 +143,9 @@ public class ChatActivity extends Activity {
     public void onResume() {
         super.onResume();
         
-        /*
-         * 
-         * $$$ 
+        
         registerReceiver(mReceiver, mIntentFilter);        
-        */ 
+      
 		mManager.discoverPeers(mChannel, new WifiP2pManager.ActionListener() {
 					
 			@Override
@@ -165,7 +165,7 @@ public class ChatActivity extends Activity {
     public void onPause() {
         super.onPause();
         
-        //   $$ unregisterReceiver(mReceiver);
+        unregisterReceiver(mReceiver);
         saveStateForeground(false);
     }    
     
@@ -184,14 +184,11 @@ public class ChatActivity extends Activity {
 			public void onClick(DialogInterface dialog, int which) {
 				clearTmpFiles(getExternalFilesDir(null));
 				
-				/*
-				 *  $$$$$  
-				 * 
-				 *
-				if(MainActivity.server!=null){
-					MainActivity.server.interrupt();
+				
+				if(MainActivity.initServer!=null){
+					MainActivity.initServer.interrupt();
 				}
-				*/		
+						
 				android.os.Process.killProcess(android.os.Process.myPid());	
 			}
 			
@@ -309,10 +306,6 @@ public class ChatActivity extends Activity {
 		Log.v(TAG, "Start AsyncTasks to send the message");
 		
 		
-		/*
-		 *  $$$$  
-		 * 
-		 *
 		if(mReceiver.isGroupeOwner() == WifiDirectBroadcastReceiver.IS_OWNER){
 			Log.v(TAG, "Message hydrated, start SendMessageServer AsyncTask");
 			new SendMessageServer(ChatActivity.this, true).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mes);
@@ -321,7 +314,7 @@ public class ChatActivity extends Activity {
 			Log.v(TAG, "Message hydrated, start SendMessageClient AsyncTask");
 			new SendMessageClient(ChatActivity.this, mReceiver.getOwnerAddr()).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, mes);
 		}		
-		*/
+		
 		edit.setText("");
 	}
 	

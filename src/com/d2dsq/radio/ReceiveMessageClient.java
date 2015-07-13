@@ -16,7 +16,7 @@ import com.d2dsq.models.*;
 import com.example.test123.*;
 
 public class ReceiveMessageClient extends AbstractReceiver {
-	private static final int SERVER_PORT = 4446;
+	private static final int SERVER_PORT = 5446;
 	private Context mContext;
 	private ServerSocket socket;
 

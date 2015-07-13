@@ -21,7 +21,7 @@ import com.example.test123.*;
 public class SendMessageServer extends AsyncTask<Message, Message, Message>{
 	private static final String TAG = "SendMessageServer";
 	private Context mContext;
-	private static final int SERVER_PORT = 4446;
+	private static final int SERVER_PORT = 5446;
 	private boolean isMine;
 
 	public SendMessageServer(Context context, boolean mine){

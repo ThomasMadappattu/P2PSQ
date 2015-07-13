@@ -15,7 +15,7 @@ import com.example.test123.*;
 
 
 public class ReceiveMessageServer extends AbstractReceiver {
-	private static final int SERVER_PORT = 4445;
+	private static final int SERVER_PORT = 5445;
 	private Context mContext;
 	private ServerSocket serverSocket;
 

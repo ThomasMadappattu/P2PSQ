@@ -20,7 +20,7 @@ import com.example.test123.*;
 public class SendMessageClient extends AsyncTask<Message, Message, Message>{
 	private static final String TAG = "SendMessageClient";
 	private Context mContext;
-	private static final int SERVER_PORT = 4445;
+	private static final int SERVER_PORT = 5445;
 	private InetAddress mServerAddr;
 	
 	public SendMessageClient(Context context, InetAddress serverAddr){

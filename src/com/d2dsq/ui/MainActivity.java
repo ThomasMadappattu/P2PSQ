@@ -53,7 +53,7 @@ public class MainActivity extends Activity
 	int cameraId = -1;
 	
 	
-	ServerInit initServer;
+	public static ServerInit initServer=null;
 	ClientInit initClient; 
 	private static final String TAG = "MainActivity"; 
 	
@@ -129,7 +129,7 @@ public class MainActivity extends Activity
 					
 					initServer  = new ServerInit();
 					initServer.start(); 
-					Log.v(TAG, "String wifi server ........"); 
+					Log.v(TAG, "Strating wifi server ........"); 
 					
 				}
                      

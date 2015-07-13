@@ -31,7 +31,7 @@
 	        android:layout_marginTop="10dp"
 	        android:longClickable="true" />
 	    
-	    <com.android.wondercom.CustomViews.DynamicImageView
+	    <com.d2dsq.ui.DynamicImageView
 	        android:id="@+id/image"
 	        android:layout_below="@id/text"
 	        android:layout_width="180dp"
@@ -55,7 +55,7 @@
 	        android:layout_height="wrap_content"
 	        android:layout_below="@id/playAudio">
 	        
-	        <com.android.wondercom.CustomViews.DynamicImageView 
+	        <com.d2dsq.ui.DynamicImageView 
 		        android:id="@+id/playVideo"
 		        android:layout_width="180dp"
 		        android:layout_height="wrap_content"
