@@ -109,7 +109,9 @@ public class MainActivity extends Activity
 		StartBluetoothServer(); 
 		
 		
-	    
+	    // Start the routing manager 
+		
+		RoutingManager rout  = new RoutingManager(); 
 		
 		
 		

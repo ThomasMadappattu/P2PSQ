@@ -20,6 +20,12 @@ public class Message implements Serializable{
 	public static final int AUDIO_MESSAGE = 4;
 	public static final int FILE_MESSAGE = 5;
 	public static final int DRAWING_MESSAGE = 6;
+	public static final int DISCOVER_MESSAGE = 7;
+	public static final int RESPONSE_MESSAGE = 8; 
+	
+	
+	public static final int DISCOVER_SIZE = 8096; 
+	
 	
 	private int mType;
 	private String mText;
@@ -30,6 +36,11 @@ public class Message implements Serializable{
 	private long fileSize;
 	private String filePath;
 	private boolean isMine;
+	
+	
+	private String path;
+	private String service; 
+
 	
 	//Getters and Setters
 	public int getmType() { return mType; }
@@ -53,6 +64,27 @@ public class Message implements Serializable{
 	
 	
 	
+	
+	public byte[] CreateDiscoverPacketByteArray()
+	{
+	   
+	   
+	   byte[] bPath =  path.getBytes(); 
+	   byte[] bService = service.getBytes(); 
+	   
+	   byte[] discoverPacket = new byte[DISCOVER_SIZE];
+	   
+	   discoverPacket[0] = DISCOVER_MESSAGE; 
+	   
+	   System.arraycopy(bService, 0, discoverPacket, 1, bService.length); 
+	   System.arraycopy(bPath, 0, discoverPacket, 1024, bPath.length); 
+	   
+	   
+	   
+	   return discoverPacket; 
+		
+	}
+	
 	public Message(int type, String text, InetAddress sender, String name){
 		mType = type;
 		mText = text;	
@@ -60,6 +92,13 @@ public class Message implements Serializable{
 		chatName = name;
 	}
 	
+	public void SetDiscoverMessage(String service, String path)
+	{
+		this.service = service; 
+		this.path  = path; 
+		
+		
+	}
 	public Bitmap byteArrayToBitmap(byte[] b){
 		Log.v(TAG, "Convert byte array to image (bitmap)");
 		return BitmapFactory.decodeByteArray(b, 0, b.length);
