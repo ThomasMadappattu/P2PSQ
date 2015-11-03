@@ -62,11 +62,23 @@ public class MainActivity extends Activity
 
 	}
 
+	
+	public void DoInitialConfig()
+	{
+		ConfigManager.Set("USESMS", "yes"); 
+		ConfigManager.Set("USECAM", "yes");
+		ConfigManager.Set("USEINET", "yes");
+		
+	}
 	private void DoInitiliazation()
 	{
 
+		
+		DoInitialConfig(); 
+		
 		BluetoothUtil.init();
-
+        
+		
 		// Fetch all the peered devices
 
 		for (String s : BluetoothUtil.GetPeerNames())

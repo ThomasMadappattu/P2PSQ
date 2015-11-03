@@ -63,28 +63,32 @@ public class ServiceShareChoiceActivity extends Activity
 				{
 					configString += "SMS";
 					bFirst = true;
+					ConfigManager.Set("USESMS", "yes"); 
+					
+				}
+				else
+				{
+					ConfigManager.Set("USESMS", "no"); 
+					
 				}
 				if (camCheckBox.isChecked())
 				{
-					if (bFirst)
-					{
-						configString += ",CAM";
-					} else
-					{
-						configString = "CAM";
-						bFirst = true;
-					}
+					ConfigManager.Set("USECAM", "yes");
+					
+				}
+				else
+				{
+					ConfigManager.Set("USECAM", "no");
 				}
 				if (inetCheckBox.isChecked())
 				{
+					ConfigManager.Set("USEINET", "yes");
+					
 
-					if (bFirst)
-					{
-						configString += ",INET";
-					} else
-					{
-						configString = "INET";
-					}
+				}
+				else
+				{
+					ConfigManager.Set("USEINET", "no");
 				}
 				ConfigManager.Set("sharedServices", configString);
 				ConfigManager.Set("useService", serviceSpinner

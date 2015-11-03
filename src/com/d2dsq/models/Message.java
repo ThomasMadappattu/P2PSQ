@@ -22,6 +22,7 @@ public class Message implements Serializable{
 	public static final int DRAWING_MESSAGE = 6;
 	public static final int DISCOVER_MESSAGE = 7;
 	public static final int RESPONSE_MESSAGE = 8; 
+	public static final int REQUEST_MESSAGE  = 9 ; 
 	
 	
 	public static final int DISCOVER_SIZE = 8096; 
@@ -40,6 +41,7 @@ public class Message implements Serializable{
 	
 	private String path;
 	private String service; 
+	private String respPath; 
 
 	
 	//Getters and Setters
@@ -62,8 +64,28 @@ public class Message implements Serializable{
 	public boolean isMine() { return isMine; }
 	public void setMine(boolean isMine) { this.isMine = isMine; }
 	
+	public void setResponsePath(String repPath)
+	{
+		respPath = repPath; 
+	}
 	
 	
+	public byte[] CreateResponsePacket()
+	{
+		byte[] responsePacket = new byte[ 2 * DISCOVER_SIZE]; 
+		byte[] bPath =  path.getBytes(); 
+		byte[] bService = service.getBytes(); 
+		byte[] bPath2 =  respPath.getBytes(); 
+	   
+		responsePacket[0] = RESPONSE_MESSAGE; 
+		   
+		System.arraycopy(bService, 0, responsePacket, 1, bService.length); 
+		System.arraycopy(bPath, 0, responsePacket, 1024, bPath.length);
+		System.arraycopy(bPath2, 0, responsePacket, 8096, bPath2.length); 
+	
+		
+		return responsePacket; 
+	}
 	
 	public byte[] CreateDiscoverPacketByteArray()
 	{
