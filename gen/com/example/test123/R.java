@@ -85,6 +85,7 @@ public final class R {
         public static final int buttonSend=0x7f09001c;
         public static final int cameraCheckBox=0x7f090013;
         public static final int chatName=0x7f090021;
+        public static final int discover_resource=0x7f090033;
         public static final int doneButton=0x7f090016;
         public static final int edURL=0x7f090000;
         public static final int editMessage=0x7f090009;
@@ -101,20 +102,20 @@ public final class R {
         public static final int internetCheckbox=0x7f090017;
         public static final int messageList=0x7f090007;
         public static final int ok=0x7f09000f;
-        public static final int pick_image=0x7f090037;
+        public static final int pick_image=0x7f090038;
         public static final int playAudio=0x7f090024;
         public static final int playVideo=0x7f090026;
         public static final int play_audio=0x7f09000e;
         public static final int record_audio=0x7f09000d;
         public static final int relativeLayout=0x7f090020;
         public static final int sendMessage=0x7f09000a;
-        public static final int send_audio=0x7f090035;
-        public static final int send_file=0x7f090034;
-        public static final int send_image=0x7f090033;
-        public static final int send_video=0x7f090036;
+        public static final int send_audio=0x7f090036;
+        public static final int send_file=0x7f090035;
+        public static final int send_image=0x7f090034;
+        public static final int send_video=0x7f090037;
         public static final int smsCheckBox=0x7f090010;
         public static final int spAvServices=0x7f090011;
-        public static final int take_photo=0x7f090038;
+        public static final int take_photo=0x7f090039;
         public static final int text=0x7f090022;
         public static final int textView1=0x7f09000b;
         public static final int textView2=0x7f090019;
@@ -156,65 +157,66 @@ public final class R {
         public static final int action_browser=0x7f060007;
         public static final int action_chat=0x7f06000b;
         public static final int action_config=0x7f060009;
+        public static final int action_discover=0x7f06000c;
         public static final int action_settings=0x7f060008;
         public static final int action_sms=0x7f06000a;
         public static final int app_name=0x7f060000;
         public static final int application_name=0x7f060006;
-        public static final int back_button=0x7f06001e;
-        public static final int brush=0x7f06002d;
+        public static final int back_button=0x7f06001f;
+        public static final int brush=0x7f06002e;
         /**  Menus 
          */
-        public static final int disconnect=0x7f060013;
-        public static final int download_image=0x7f060015;
-        public static final int enter_text=0x7f060025;
-        public static final int eraser=0x7f06002e;
-        public static final int file_icon=0x7f060027;
+        public static final int disconnect=0x7f060014;
+        public static final int download_image=0x7f060016;
+        public static final int enter_text=0x7f060026;
+        public static final int eraser=0x7f06002f;
+        public static final int file_icon=0x7f060028;
         /**  Descriptions 
          */
-        public static final int full_screen_image=0x7f060026;
+        public static final int full_screen_image=0x7f060027;
         /**  Buttons 
          */
-        public static final int go_to_settings_button=0x7f06001c;
+        public static final int go_to_settings_button=0x7f06001d;
         /**  TextView 
          */
-        public static final int go_to_settings_text=0x7f060023;
+        public static final int go_to_settings_text=0x7f060024;
         public static final int hello_world=0x7f060001;
-        public static final int large=0x7f06002b;
-        public static final int medium=0x7f06002a;
+        public static final int large=0x7f06002c;
+        public static final int medium=0x7f06002b;
         /**  Drawing buttons 
          */
-        public static final int new_drawing=0x7f06002c;
-        public static final int ok=0x7f060022;
-        public static final int paint=0x7f060028;
+        public static final int new_drawing=0x7f06002d;
+        public static final int ok=0x7f060023;
+        public static final int paint=0x7f060029;
         /**  Popup menus 
          */
-        public static final int pick_image=0x7f06001a;
-        public static final int playback_button=0x7f060020;
-        public static final int record_button=0x7f06001f;
-        public static final int save_and_send=0x7f06002f;
-        public static final int send_audio=0x7f060016;
-        public static final int send_button=0x7f06001d;
-        public static final int send_drawing=0x7f060019;
-        public static final int send_file=0x7f060018;
-        public static final int send_image=0x7f060014;
-        public static final int send_video=0x7f060017;
+        public static final int pick_image=0x7f06001b;
+        public static final int playback_button=0x7f060021;
+        public static final int record_button=0x7f060020;
+        public static final int save_and_send=0x7f060030;
+        public static final int send_audio=0x7f060017;
+        public static final int send_button=0x7f06001e;
+        public static final int send_drawing=0x7f06001a;
+        public static final int send_file=0x7f060019;
+        public static final int send_image=0x7f060015;
+        public static final int send_video=0x7f060018;
         /**  EditTexts 
          */
-        public static final int set_chat_name=0x7f060024;
-        public static final int small=0x7f060029;
-        public static final int stop_recording_button=0x7f060021;
-        public static final int take_photo=0x7f06001b;
+        public static final int set_chat_name=0x7f060025;
+        public static final int small=0x7f06002a;
+        public static final int stop_recording_button=0x7f060022;
+        public static final int take_photo=0x7f06001c;
         public static final int title_activity_browser=0x7f060005;
-        public static final int title_activity_chat=0x7f06000d;
-        public static final int title_activity_drawing=0x7f060012;
-        public static final int title_activity_file_picker=0x7f060010;
+        public static final int title_activity_chat=0x7f06000e;
+        public static final int title_activity_drawing=0x7f060013;
+        public static final int title_activity_file_picker=0x7f060011;
         public static final int title_activity_photo=0x7f060004;
-        public static final int title_activity_play_video=0x7f06000f;
-        public static final int title_activity_record_audio=0x7f06000e;
+        public static final int title_activity_play_video=0x7f060010;
+        public static final int title_activity_record_audio=0x7f06000f;
         public static final int title_activity_service_share_choice=0x7f060002;
         public static final int title_activity_sms=0x7f060003;
-        public static final int title_activity_view_image=0x7f06000c;
-        public static final int title_activity_web_view=0x7f060011;
+        public static final int title_activity_view_image=0x7f06000d;
+        public static final int title_activity_web_view=0x7f060012;
     }
     public static final class style {
         /** 

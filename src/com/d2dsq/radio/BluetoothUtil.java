@@ -109,11 +109,25 @@ public class BluetoothUtil
 		
 		cThread = new ClientThread(dev,defHandler);
 		cThread.start(); 
+		
+		// Renew message for each data transfer 
+		msg = new Message(); 
 		Log.v("BluetoothUtil.SendData : ", dev.getName()) ;
 		msg.obj = data; 
 		// Wait till connection is established 
-		
+		// Wait till everything intializes properly 
 		while ( !cThread.hasConnectionEstablished() ); 
+		while ( !cThread.hasConnectionEstablished() );
+		try
+		{
+			Thread.sleep(5000);
+		} catch (InterruptedException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+		while ( cThread.incomingHandler == null ); 
+		
 		cThread.incomingHandler.sendMessage(msg); 
          
 		
@@ -126,10 +140,21 @@ public class BluetoothUtil
 		cThread = new ClientThread(dev,defHandler);
 		cThread.start(); 
 		Log.v("BluetoothUtil.SendData : ", dev.getName()) ;
+		msg = new Message(); 
 		msg.obj = data; 
 		// Wait till connection is established 
 		
-		while ( !cThread.hasConnectionEstablished() ); 
+		while ( !cThread.hasConnectionEstablished() );
+		try
+		{
+			Thread.sleep(5000);
+		} catch (InterruptedException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+		while ( cThread.incomingHandler == null ); 
+		
 		cThread.incomingHandler.sendMessage(msg); 
 		
 	}

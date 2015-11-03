@@ -18,7 +18,7 @@ public class RoutingManager
 	   private Set<Node> neighbours = new HashSet();
 	   
 	   public static RoutingManager theRouter = new RoutingManager(); 
-	   public final static String BLUETOOTH_PREFIX = ":B"; 
+	 
 	   
 	   
 	   public int getPathHops(String path)
@@ -115,19 +115,8 @@ public class RoutingManager
 	   public void SendDiscoverMessagesBluetooth(String service) throws UnknownHostException
 	   {
 		    
-		    String path= BluetoothUtil.adapter.getName() + BLUETOOTH_PREFIX; 
-		    com.d2dsq.models.Message mes = new com.d2dsq.models.Message(Message.DISCOVER_MESSAGE, "",InetAddress.getLocalHost() ,"");    
-		    mes.SetDiscoverMessage(service,path) ; 
-	        
-		    // Get the paired devices 
-		    BluetoothUtil.GetPairedDevices(); 
-		    
-		    for ( BluetoothDevice dev :  BluetoothUtil.pairedDevices )
-		    {
-		    	BluetoothUtil.SendData(mes.CreateDiscoverPacketByteArray(), dev); 
-		    	
-		    }
-		 
+		   BluetoothDiscoverThread disThread = new BluetoothDiscoverThread(service); 
+		   disThread.start(); 
 		    
 	   
 	   }

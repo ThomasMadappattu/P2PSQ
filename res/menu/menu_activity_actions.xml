@@ -20,7 +20,10 @@
              android:title="@string/action_sms"
           
           />
-       
+        <item android:id="@+id/discover_resource"
+             android:title="@string/action_discover"
+          
+          />
        
        
 

@@ -1,9 +1,5 @@
 package com.d2dsq.ui;
 
-
-
-
-
 import com.d2dsq.baseservices.SmsUtil;
 import com.d2dsq.utils.ConfigManager;
 import com.example.test123.R;
@@ -20,7 +16,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
-
 import java.util.*;
 import android.widget.*;
 import android.content.*;
@@ -28,256 +23,253 @@ import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
 import android.bluetooth.*;
 import java.io.*;
+import java.net.UnknownHostException;
 
 import com.d2dsq.radio.*;
 import com.d2dsq.routing.*;
-
-
 
 public class MainActivity extends Activity
 {
 
 	private BluetoothAdapter bluetooth;
 	private BluetoothSocket socket;
-	public static  volatile boolean isWifiServer = false; 
+	public static volatile boolean isWifiServer = false;
 	BluetoothDevice pairedDevice = null;
 	private UUID uuid = UUID.fromString("a60f35f0-b93a-11de-8a39-08002009c666");
-	
-   	int REQUEST_ENABLE_BT = 3;
-	
+
+	int REQUEST_ENABLE_BT = 3;
+
 	private WifiP2pManager mManager;
 	private Channel mChannel;
 	private WifiDirectBroadcastReceiver mReceiver;
 	private IntentFilter mIntentFilter;
-	
+
 	Camera camera = null;
 	int cameraId = -1;
-	
-	
-	public static ServerInit initServer=null;
-	ClientInit initClient; 
-	private static final String TAG = "MainActivity"; 
-	
-	
-	
+
+	public static ServerInit initServer = null;
+	ClientInit initClient;
+	private static final String TAG = "MainActivity";
+
 	// ArrayAdapter<String> mArrayAdapter = new ArrayAdapter<String>();
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-        Log.d("MainActivity", "onCreate"); 
-        DoInitiliazation(); 
-			
+		Log.d("MainActivity", "onCreate");
+		DoInitiliazation();
+
 	}
 
 	private void DoInitiliazation()
 	{
-		
-		BluetoothUtil.init(); 
-		
-		// Fetch all the peered devices 
-		
-		for ( String s : BluetoothUtil.GetPeerNames() )
+
+		BluetoothUtil.init();
+
+		// Fetch all the peered devices
+
+		for (String s : BluetoothUtil.GetPeerNames())
 		{
-			Log.e("MainActivity - Bluetooth", s ); 
-			
+			Log.e("MainActivity - Bluetooth", s);
+
 		}
-		
-	    for ( BluetoothDevice dev : BluetoothUtil.pairedDevices)
-	    {
-	    	
-	    	Node node = new Node(); 
-	    	node.setBluetoothNode(false);
-	    	node.setWifiNode(true);
-	    	node.setDevice(dev);
-	    	node.setNodeName(dev.getName()); 
-	    	RoutingManager.theRouter.addNeighbour(node); 
-	    	
-	    }
-		
-		
-		
-		
-		// Set up default Configuration items 
-	
-		
-		// Start all deamons 
-				
-		
-		// Starting Bluetooth server thread 
-		StartBluetoothServer(); 
-		
-		
-	    // Start the routing manager 
-		
-		RoutingManager rout  = new RoutingManager(); 
-		
-		
-		
-		// Initializing Wifi Direct 
-		
+
+		for (BluetoothDevice dev : BluetoothUtil.pairedDevices)
+		{
+
+			Node node = new Node();
+			node.setBluetoothNode(false);
+			node.setWifiNode(true);
+			node.setDevice(dev);
+			node.setNodeName(dev.getName());
+			RoutingManager.theRouter.addNeighbour(node);
+
+		}
+
+		// Set up default Configuration items
+
+		// Start all deamons
+
+		// Starting Bluetooth server thread
+		try
+		{
+			StartBluetoothServer();
+		} catch (UnknownHostException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+
+
+		// Initializing Wifi Direct
+
 		mManager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
-        mChannel = mManager.initialize(this, getMainLooper(), null);
-        mReceiver = WifiDirectBroadcastReceiver.createInstance();
-        mReceiver.setmManager(mManager);
-        mReceiver.setmChannel(mChannel);
-        mReceiver.setmActivity(this);
-        
-        mIntentFilter = new IntentFilter();
-        mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
-        mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
-        mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
-        mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
-		
-		
-		//MainApplication.serverThread.start();
-		
-		  
-		
-		
+		mChannel = mManager.initialize(this, getMainLooper(), null);
+		mReceiver = WifiDirectBroadcastReceiver.createInstance();
+		mReceiver.setmManager(mManager);
+		mReceiver.setmChannel(mChannel);
+		mReceiver.setmActivity(this);
+
+		mIntentFilter = new IntentFilter();
+		mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
+		mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
+		mIntentFilter
+				.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
+		mIntentFilter
+				.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
+
+		// MainApplication.serverThread.start();
+
 		
 	}
-	
+
 	@Override
-    public void onResume() 
+	public void onResume()
 	{
-        super.onResume();
-        registerReceiver(mReceiver, mIntentFilter);
-        
-		mManager.discoverPeers(mChannel, new WifiP2pManager.ActionListener() {
-					
+		super.onResume();
+		registerReceiver(mReceiver, mIntentFilter);
+
+		mManager.discoverPeers(mChannel, new WifiP2pManager.ActionListener()
+		{
+
 			@Override
-			public void onSuccess() {
+			public void onSuccess()
+			{
 				Log.v(TAG, "Discovery process succeeded");
 			}
-			
+
 			@Override
-			public void onFailure(int reason) {
+			public void onFailure(int reason)
+			{
 				Log.v(TAG, "Discovery process failed");
 			}
 		});
-    }
+	}
 
-    @Override
-    public void onPause() 
-    {
-        super.onPause();
-        unregisterReceiver(mReceiver);
-    }
-
-	
-	
-	
-	private void StartBluetoothServer()
+	@Override
+	public void onPause()
 	{
-		
-		MainApplication.serverHandler = new Handler(){
-			
-			
+		super.onPause();
+		unregisterReceiver(mReceiver);
+	}
+
+	private void StartBluetoothServer() throws UnknownHostException
+	{
+
+		MainApplication.serverHandler = new Handler()
+		{
+
 			@Override
 			public void handleMessage(Message message)
 			{
-				
-			
-			
-				switch (message.what) 
+
+				switch (message.what)
 				{
-				    case  MessageType.DATA_RECEIVED: 
-				    	Toast.makeText(MainActivity.this, "We got something ..  ", Toast.LENGTH_SHORT).show();
+				case MessageType.DATA_RECEIVED:
+					Toast.makeText(MainActivity.this, "We got something ..  ",
+							Toast.LENGTH_LONG).show();
 
-						break;
-						
-					case MessageType.DIGEST_DID_NOT_MATCH: 
-						break;
-					
-					case MessageType.DATA_PROGRESS_UPDATE: 
-	                    break; 
-	                    
-					case MessageType.INVALID_HEADER: 
-						Toast.makeText(MainActivity.this, "Invalid header ..  ", Toast.LENGTH_SHORT).show();
-						break;
+					break;
+
+				case MessageType.DIGEST_DID_NOT_MATCH:
+					break;
+
+				case MessageType.DATA_PROGRESS_UPDATE:
+					break;
+
+				case MessageType.INVALID_HEADER:
+					Toast.makeText(MainActivity.this, "Invalid header ..  ",
+							Toast.LENGTH_SHORT).show();
+					break;
 				}
-                     
 
-			
-			
-			
 			}
-             
-			
 
-		};	
+		};
+
+		MainApplication.serverThread = new ServerThread(BluetoothUtil.adapter,
+				MainApplication.serverHandler);
+		MainApplication.serverThread.start();
 		
+		// Start Bluetooth Server 
+	
 		
-		MainApplication.serverThread = new ServerThread(BluetoothUtil.adapter, MainApplication.serverHandler)	;
-		MainApplication.serverThread.start(); 
-		
-				
-		
+
 	}
-	
-	
-
-	
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu)
 	{
 		// Inflate the menu; this adds items to the action bar if it is present.
 		// Inflate the menu items for use in the action bar
-	    MenuInflater inflater = getMenuInflater();
-	    inflater.inflate(R.menu.menu_activity_actions, menu);
-	    return super.onCreateOptionsMenu(menu);
-		
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.menu_activity_actions, menu);
+		return super.onCreateOptionsMenu(menu);
+
 	}
 
-	
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-	    // Handle presses on the action bar items
-	    switch (item.getItemId()) {
-	        case R.id.action_config:
-	        	
-	        		        	
-	        	Intent intent = new Intent(this, ServiceShareChoiceActivity.class);
-	        	startActivity(intent); 
-	            break; 
-	        case R.id.action_chat:
-	        	
-	        	//Start the init process
-				if(mReceiver.isGroupeOwner() ==  WifiDirectBroadcastReceiver.IS_OWNER){
-					Toast.makeText(MainActivity.this, "I'm the group owner  " + mReceiver.getOwnerAddr().getHostAddress(), Toast.LENGTH_SHORT).show();
-					initServer = new ServerInit();
-					initServer.start();
-				}
-				else if(mReceiver.isGroupeOwner() ==  WifiDirectBroadcastReceiver.IS_CLIENT){
-					Toast.makeText(MainActivity.this, "I'm the client", Toast.LENGTH_SHORT).show();
-					ClientInit client = new ClientInit(mReceiver.getOwnerAddr());
-					client.start();
-				}
-				
-	        	
-	        	Intent chatIntent = new Intent ( this , ChatActivity.class); 
-	        	startActivity(chatIntent); 
-	         	break;
-	 
-	        case R.id.action_browser:
-	        	Intent browserIntent = new Intent(this, BrowserActivity.class);
-	        	startActivity(browserIntent); 
-	        	break;
-	        case R.id.action_sms:
-	        	Intent smsActivity = new Intent(this, SMSActivity.class); 
-	        	startActivity(smsActivity); 
-	        	break; 
-	        	
-	            
-	        default:
-	            return super.onOptionsItemSelected(item);
-	    }
-	    
-	    return true; 
+	public boolean onOptionsItemSelected(MenuItem item)
+	{
+		// Handle presses on the action bar items
+		switch (item.getItemId())
+		{
+		case R.id.action_config:
+
+			Intent intent = new Intent(this, ServiceShareChoiceActivity.class);
+			startActivity(intent);
+			break;
+		case R.id.action_chat:
+
+			// Start the init process
+			if (mReceiver.isGroupeOwner() == WifiDirectBroadcastReceiver.IS_OWNER)
+			{
+				Toast.makeText(
+						MainActivity.this,
+						"I'm the group owner  "
+								+ mReceiver.getOwnerAddr().getHostAddress(),
+						Toast.LENGTH_SHORT).show();
+				initServer = new ServerInit();
+				initServer.start();
+			} else if (mReceiver.isGroupeOwner() == WifiDirectBroadcastReceiver.IS_CLIENT)
+			{
+				Toast.makeText(MainActivity.this, "I'm the client",
+						Toast.LENGTH_SHORT).show();
+				ClientInit client = new ClientInit(mReceiver.getOwnerAddr());
+				client.start();
+			}
+
+			Intent chatIntent = new Intent(this, ChatActivity.class);
+			startActivity(chatIntent);
+			break;
+
+		case R.id.action_browser:
+			Intent browserIntent = new Intent(this, BrowserActivity.class);
+			startActivity(browserIntent);
+			break;
+		case R.id.action_sms:
+			Intent smsActivity = new Intent(this, SMSActivity.class);
+			startActivity(smsActivity);
+			break;
+		case R.id.discover_resource: 
+			try
+			{
+				RoutingManager.theRouter.SendDiscoverMessagesBluetooth("SMS");
+			} catch (UnknownHostException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
+			
+			break; 
+
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+
+		return true;
 	}
 
-	
 }
