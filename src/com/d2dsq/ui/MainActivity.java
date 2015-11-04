@@ -182,6 +182,35 @@ public class MainActivity extends Activity
 				case MessageType.DATA_RECEIVED:
 					Toast.makeText(MainActivity.this, "We got something ..  ",
 							Toast.LENGTH_LONG).show();
+					byte[]  packet = message.obj.toString().getBytes(); 
+					
+					if ( packet[0]  ==  com.d2dsq.models.Message.DISCOVER_MESSAGE )
+					{
+						try
+						{
+							RoutingManager.theRouter.HandleBluetoothDiscoveryMessage(packet);
+						} catch (UnknownHostException e)
+						{
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} 
+						
+					}
+					else if ( packet[0]  ==  com.d2dsq.models.Message.RESPONSE_MESSAGE )
+					{
+						RoutingManager.theRouter.HandleBluetoothResponseMessage(packet); 
+						
+					}
+					else if ( packet[0] == com.d2dsq.models.Message.REQUEST_MESSAGE)
+					{
+						
+					
+						RoutingManager.theRouter.HandleBluetoothRequest(packet);
+						
+						
+						
+					}
+				
 
 					break;
 

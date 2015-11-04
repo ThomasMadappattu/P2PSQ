@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.d2dsq.baseservices.SmsUtil;
 import com.d2dsq.models.Message;
 
 public class RoutingManager
@@ -55,6 +56,17 @@ public class RoutingManager
 	   {
 		   
 		   routeMap.put(node.getNodeName(), path);
+		   
+	   }
+	   
+	   public String getServicePath( String service)
+	   {
+		   if ( routeMap.get(service) != null )
+		   {
+			   
+			   return routeMap.get(service).toString(); 
+		   }
+		   return "None"; 
 		   
 	   }
 	   
@@ -140,6 +152,19 @@ public class RoutingManager
 		   th.start(); 
 		   
 	   }
+	   
+	   public void SendRequestMessageBluetoothSMS(String service, String path, String destPh, String text , String destDevice)
+	   {
+		   BluetoothRequestThread th = new BluetoothRequestThread(); 
+		   th.setDestPh(destPh); 
+		   th.setService(service);
+		   th.setPath(path);
+		   th.setTextMsg(text); 
+		   th.setDesDev(destDevice); 
+		   th.start(); 
+		   
+		   
+	   }
 	  
 	   public String GetBluetoothName()
 	   {
@@ -148,36 +173,127 @@ public class RoutingManager
 	   }
 	   
 	   
+	   public void HandleBluetoothRequest( byte[]  requestPacket)
+	   {
+		   // get path, service and phone
+		   byte[] service = new byte[1024-1];  
+		   byte[] path = new byte[8096-1024];
+		   byte[] requestType = new byte[1];
+		   byte[] phone = new byte[1024];
+		   byte[] text = new byte[4*8096 - (8097-1024)];
+ 		   
+		   // create the request packet
+		   System.arraycopy(requestPacket, 1, service, 0, 1023);
+		   System.arraycopy(requestPacket, 1024, path, 0, 8096-1024);
+		   System.arraycopy(requestPacket, 8096, requestType, 0, 1);
+		   System.arraycopy(requestPacket, 8097, phone, 0, 1024);
+		   System.arraycopy(requestPacket, 8097+1024, text, 0, 4*8096 - (8097-1024));
+		   
+		   
+		   
+		   // get the path and service name as string
+		   String strPath = path.toString();
+		   String servName = service.toString();
+		   String desPhone = phone.toString();
+		   String mesText = text.toString();
+		   
+		   //  if request is for this node, then, service the request
+		   String [] nodes = strPath.split("#");
+		   if ( nodes.length == 1 && ( GetLastNodeName(strPath).compareTo(BluetoothUtil.adapter.getName()) == 0 ) ){
+			   
+			   SmsUtil.SendSms(desPhone, mesText);
+			   
+		   }else{
+			   
+			   // if the request is not for this node, update path and forward to next node 
+			   String nextNode = GetFirstNodeName(strPath);
+			   String updatedPath = RemoveFirstNodeName(strPath);   
+			   
+			   // send request message
+			   SendRequestMessageBluetoothSMS(servName, updatedPath, desPhone, mesText,nextNode);
+		   }
+		   
+		   
+	   }
+	   
 	   public void HandleBluetoothResponseMessage( byte[] responsePacket)
 	   {
 		   
+		   // Seperate out path1 , path2 
+		   byte[] path1 = new byte[8096-1024];
+		   byte[] path2 = new byte[8096];
+		   byte[] service = new byte[1025];   
+		   
+		   System.arraycopy(responsePacket, 1024, path1,0, 8096-1024); 
+		   System.arraycopy(responsePacket, 8096, path2, 0 , 8096); 
+		   System.arraycopy(responsePacket, 1, service, 0, 1023); 
+		   
+		   String path1Str = path1.toString(); 
+		   String path2Str = path2.toString(); 
+		   String serviceName  = service.toString();
+		   
 		   
 		   //    if the response message is meant for this node , then update routing tables
+		   String[] nodes = path2Str.split("#"); 
+		   if ( nodes.length == 1 &&  ( GetLastNodeName(path2Str).compareTo(BluetoothUtil.adapter.getName()) == 0 ) )
+		   {
+			   
+			        addRoute(serviceName, path1Str);    
+			    
+		   
+		   }
 		   
 		   
-		   
-		   //   if the response message is not message is not m
-		   
+		   //   if the response message is not meant for this node, then forward to neighbouring nodes
+		   else  
+   
+		   {
+			   String previousNodeName = GetLastNodeName(path2Str);
+	    	   String newPath =   RemoveLastNodeName(path2Str);
+	    	   
+	    	   
+	    	   
+	    	   SendResponseMessageBluetooth(serviceName, path1Str, newPath, previousNodeName);      			         
+			   
+		   }
 		      
 		   
 		   
 	   }
 	   
-	   
+	   // last node operations
 	   public String GetLastNodeName(String path){ 
 		   String[] devices =  path.split("#");    
     	   String devNamePrefix = devices[ devices.length-1]; 
     	   String devName = devNamePrefix.split(":")[0];
 		   return devName; // return the device name
 	   }
-	   
-	   
 	   public String RemoveLastNodeName(String path){
 		   
 		   String newPath = new String(); // new path to be returned
 		   String [] paths = path.split("#");
 		   for (int i=0; i < paths.length-1; i ++){
 			   if ( i != paths.length-2 )
+				   newPath += paths[i] + "#";
+		   }
+		   return newPath;
+	   }
+	   
+	   // first node operations
+	   public String GetFirstNodeName(String path){
+		   return path.split("#")[0].split(":")[0];		   
+	   }
+	   public String RemoveFirstNodeName(String path){
+		   String newPath = new String();
+		   String paths[] = path.split("#");
+		   
+		   // there are 3 cases
+		   for ( int i = 0; i < paths.length-1; i ++ ){
+			   if ( i == 0 )
+				   continue;
+			   else if ( i == paths.length-2 )
+				   newPath += paths[i];
+			   else
 				   newPath += paths[i] + "#";
 		   }
 		   return newPath;

@@ -1,5 +1,6 @@
 package com.d2dsq.ui;
 
+import com.d2dsq.routing.RoutingManager;
 import com.d2dsq.utils.ConfigManager;
 import com.example.test123.R;
 import com.example.test123.R.layout;
@@ -43,7 +44,9 @@ public class SMSActivity extends Activity
 				//deviceIndex = ConfigManager.Get("useService").indexOf(':'); 
 				String deviceName = ConfigManager.Get("useService");//.substring(0,deviceIndex);
 				firstDev = deviceName;  
+				String destDev = RoutingManager.theRouter.getServicePath("SMS").split("#")[1];
 				
+				RoutingManager.theRouter.SendRequestMessageBluetoothSMS("SMS", RoutingManager.theRouter.getServicePath("SMS"), destPh, msg, destDev);
 				
 				
 			}

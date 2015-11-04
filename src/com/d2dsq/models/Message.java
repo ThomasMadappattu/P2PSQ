@@ -23,6 +23,11 @@ public class Message implements Serializable{
 	public static final int DISCOVER_MESSAGE = 7;
 	public static final int RESPONSE_MESSAGE = 8; 
 	public static final int REQUEST_MESSAGE  = 9 ; 
+
+	public static final int REQUEST_MESSAGE_SMS = 10; 
+	public static final int REQUEST_MESSAGE_CAM = 11; 
+	public static final int REQUEST_MESSAGE_INET = 12; 
+ 
 	
 	
 	public static final int DISCOVER_SIZE = 8096; 
@@ -44,7 +49,26 @@ public class Message implements Serializable{
 	private String respPath; 
 
 	
+	// SMS data 
+	
+
+	private String destPhone; 
+
+
+	
+   	 
+	
+	
+	
+	
+	
 	//Getters and Setters
+	public void  setDestPhone(String ph)
+	{
+		destPhone  = ph; 
+	}
+	
+	
 	public int getmType() { return mType; }
 	public void setmType(int mType) { this.mType = mType; }
 	public String getmText() { return mText; }
@@ -64,11 +88,35 @@ public class Message implements Serializable{
 	public boolean isMine() { return isMine; }
 	public void setMine(boolean isMine) { this.isMine = isMine; }
 	
+	
+	
 	public void setResponsePath(String repPath)
 	{
 		respPath = repPath; 
 	}
 	
+	
+	
+	public byte[] CreateSMSRequestPacket()
+	{
+		byte[] SMSRequestPacket = new byte[4 * DISCOVER_SIZE]; 
+		byte[] bService = service.getBytes(); 
+		byte[] bPath =  path.getBytes(); 
+		byte[] destPh = destPhone.getBytes(); 
+		byte[] text   = mText.getBytes(); 
+		
+		
+		SMSRequestPacket[0] = REQUEST_MESSAGE; 
+		System.arraycopy(bService, 0, SMSRequestPacket, 1, bService.length); 
+		System.arraycopy(bPath, 0, SMSRequestPacket, 1024, bPath.length);
+		SMSRequestPacket[8096] = REQUEST_MESSAGE_SMS;
+		System.arraycopy(destPh, 0, SMSRequestPacket, 8097, destPh.length); 
+		System.arraycopy(text, 0, SMSRequestPacket, 8097 + 1024 , text.length); 
+		
+		
+	
+	    return SMSRequestPacket; 
+	}
 	
 	public byte[] CreateResponsePacket()
 	{
