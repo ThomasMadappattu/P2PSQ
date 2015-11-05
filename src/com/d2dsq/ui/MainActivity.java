@@ -2,6 +2,7 @@ package com.d2dsq.ui;
 
 import com.d2dsq.baseservices.SmsUtil;
 import com.d2dsq.utils.ConfigManager;
+import com.d2dsq.utils.SerializeUtil;
 import com.example.test123.R;
 
 import android.net.wifi.p2p.WifiP2pManager;
@@ -25,8 +26,11 @@ import android.bluetooth.*;
 import java.io.*;
 import java.net.UnknownHostException;
 
+import org.apache.commons.lang.SerializationUtils;
+
 import com.d2dsq.radio.*;
 import com.d2dsq.routing.*;
+
 
 public class MainActivity extends Activity
 {
@@ -182,7 +186,7 @@ public class MainActivity extends Activity
 				case MessageType.DATA_RECEIVED:
 					Toast.makeText(MainActivity.this, "We got something ..  ",
 							Toast.LENGTH_LONG).show();
-					byte[]  packet = message.obj.toString().getBytes(); 
+					byte[] packet= ( byte[] ) message.obj;
 					
 					if ( packet[0]  ==  com.d2dsq.models.Message.DISCOVER_MESSAGE )
 					{
@@ -193,19 +197,37 @@ public class MainActivity extends Activity
 						{
 							// TODO Auto-generated catch block
 							e.printStackTrace();
+						} catch (UnsupportedEncodingException e)
+						{
+							// TODO Auto-generated catch block
+							e.printStackTrace();
 						} 
 						
 					}
 					else if ( packet[0]  ==  com.d2dsq.models.Message.RESPONSE_MESSAGE )
 					{
-						RoutingManager.theRouter.HandleBluetoothResponseMessage(packet); 
+						try
+						{
+							RoutingManager.theRouter.HandleBluetoothResponseMessage(packet);
+						} catch (UnsupportedEncodingException e)
+						{
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} 
 						
 					}
 					else if ( packet[0] == com.d2dsq.models.Message.REQUEST_MESSAGE)
 					{
 						
 					
-						RoutingManager.theRouter.HandleBluetoothRequest(packet);
+						try
+						{
+							RoutingManager.theRouter.HandleBluetoothRequest(packet);
+						} catch (UnsupportedEncodingException e)
+						{
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 						
 						
 						

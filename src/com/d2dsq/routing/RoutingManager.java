@@ -3,8 +3,10 @@ package com.d2dsq.routing;
 import android.bluetooth.BluetoothDevice;
 
 import com.d2dsq.radio.*;
+import com.d2dsq.utils.ByteUtil;
 import com.d2dsq.utils.ConfigManager;
 
+import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
@@ -17,7 +19,7 @@ import com.d2dsq.models.Message;
 public class RoutingManager
 {
 
-	   private HashMap routeMap; 
+	   private HashMap routeMap = new HashMap(); 
 	   private Set<Node> neighbours = new HashSet();
 	   public final static String BLUETOOTH_PREFIX = ":B"; 
 	   public static RoutingManager theRouter = new RoutingManager(); 
@@ -37,7 +39,7 @@ public class RoutingManager
 	   public void addRoute(String service, String path)
 	   {
  		    
-		   if ( routeMap.get(service) == null )
+		   if ( !routeMap.containsKey(service) )
 		   { 
 		        routeMap.put(service, path);  
 		   }
@@ -61,7 +63,8 @@ public class RoutingManager
 	   
 	   public String getServicePath( String service)
 	   {
-		   if ( routeMap.get(service) != null )
+		  
+		   if ( routeMap.containsKey(service) )
 		   {
 			   
 			   return routeMap.get(service).toString(); 
@@ -173,33 +176,35 @@ public class RoutingManager
 	   }
 	   
 	   
-	   public void HandleBluetoothRequest( byte[]  requestPacket)
+	   public void HandleBluetoothRequest( byte[]  requestPacket) throws UnsupportedEncodingException
 	   {
 		   // get path, service and phone
-		   byte[] service = new byte[1024-1];  
+		   byte[] service = new byte[1025];  
 		   byte[] path = new byte[8096-1024];
 		   byte[] requestType = new byte[1];
 		   byte[] phone = new byte[1024];
-		   byte[] text = new byte[4*8096 - (8097-1024)];
+		   byte[] text = new byte[4*8096 - (8097 + 1024)];
  		   
 		   // create the request packet
 		   System.arraycopy(requestPacket, 1, service, 0, 1023);
 		   System.arraycopy(requestPacket, 1024, path, 0, 8096-1024);
 		   System.arraycopy(requestPacket, 8096, requestType, 0, 1);
 		   System.arraycopy(requestPacket, 8097, phone, 0, 1024);
-		   System.arraycopy(requestPacket, 8097+1024, text, 0, 4*8096 - (8097-1024));
+		   System.arraycopy(requestPacket, 8097+1024, text, 0, 4*8096 - (8097+ 1024));
 		   
 		   
 		   
 		   // get the path and service name as string
-		   String strPath = path.toString();
-		   String servName = service.toString();
-		   String desPhone = phone.toString();
-		   String mesText = text.toString();
+		   String strPath = ByteUtil.ByteArrayToString(path);
+		   String servName = ByteUtil.ByteArrayToString(service);
+		   String desPhone = ByteUtil.ByteArrayToString(phone);
+		   String mesText = ByteUtil.ByteArrayToString(text);
+		   
 		   
 		   //  if request is for this node, then, service the request
-		   String [] nodes = strPath.split("#");
-		   if ( nodes.length == 1 && ( GetLastNodeName(strPath).compareTo(BluetoothUtil.adapter.getName()) == 0 ) ){
+		   String updatedPath = RemoveFirstNodeName(strPath);
+		   String [] nodes = updatedPath.split("#");
+		   if ( nodes.length == 1  && ( GetLastNodeName(updatedPath).compareTo(BluetoothUtil.adapter.getName()) == 0 ) ){
 			   
 			   SmsUtil.SendSms(desPhone, mesText);
 			   
@@ -207,7 +212,7 @@ public class RoutingManager
 			   
 			   // if the request is not for this node, update path and forward to next node 
 			   String nextNode = GetFirstNodeName(strPath);
-			   String updatedPath = RemoveFirstNodeName(strPath);   
+			  
 			   
 			   // send request message
 			   SendRequestMessageBluetoothSMS(servName, updatedPath, desPhone, mesText,nextNode);
@@ -216,7 +221,7 @@ public class RoutingManager
 		   
 	   }
 	   
-	   public void HandleBluetoothResponseMessage( byte[] responsePacket)
+	   public void HandleBluetoothResponseMessage( byte[] responsePacket) throws UnsupportedEncodingException
 	   {
 		   
 		   // Seperate out path1 , path2 
@@ -228,14 +233,14 @@ public class RoutingManager
 		   System.arraycopy(responsePacket, 8096, path2, 0 , 8096); 
 		   System.arraycopy(responsePacket, 1, service, 0, 1023); 
 		   
-		   String path1Str = path1.toString(); 
-		   String path2Str = path2.toString(); 
-		   String serviceName  = service.toString();
+		   String path1Str = ByteUtil.ByteArrayToString( path1); 
+		   String path2Str = ByteUtil.ByteArrayToString( path2); 
+		   String serviceName  = ByteUtil.ByteArrayToString( service);
 		   
 		   
 		   //    if the response message is meant for this node , then update routing tables
 		   String[] nodes = path2Str.split("#"); 
-		   if ( nodes.length == 1 &&  ( GetLastNodeName(path2Str).compareTo(BluetoothUtil.adapter.getName()) == 0 ) )
+		   if ( ( nodes.length == 1) &&  ( GetLastNodeName(path2Str).compareTo(BluetoothUtil.adapter.getName()) == 0 ) )
 		   {
 			   
 			        addRoute(serviceName, path1Str);    
@@ -270,11 +275,11 @@ public class RoutingManager
 	   }
 	   public String RemoveLastNodeName(String path){
 		   
-		   String newPath = new String(); // new path to be returned
+		    // new path to be returned
 		   String [] paths = path.split("#");
-		   for (int i=0; i < paths.length-1; i ++){
-			   if ( i != paths.length-2 )
-				   newPath += paths[i] + "#";
+		   String newPath = paths[0]; 
+		   for (int i=1; i < paths.length - 1; i++){
+			  newPath = joinNodes(newPath,paths[i]);
 		   }
 		   return newPath;
 	   }
@@ -284,23 +289,24 @@ public class RoutingManager
 		   return path.split("#")[0].split(":")[0];		   
 	   }
 	   public String RemoveFirstNodeName(String path){
-		   String newPath = new String();
-		   String paths[] = path.split("#");
-		   
-		   // there are 3 cases
-		   for ( int i = 0; i < paths.length-1; i ++ ){
-			   if ( i == 0 )
-				   continue;
-			   else if ( i == paths.length-2 )
-				   newPath += paths[i];
-			   else
-				   newPath += paths[i] + "#";
+		   String newPath = "";
+		   String[] paths = path.split("#");
+		   if ( paths.length >= 2 )
+		   {
+			   newPath = paths[1]; 
+			   
 		   }
+		   // there are 3 cases
+		   for ( int i = 2; i < paths.length; i++ )
+			   {
+				   newPath= joinNodes(newPath,paths[i]); 
+				   
+			   }
 		   return newPath;
 	   }
 	   
 	   
-	   public void HandleBluetoothDiscoveryMessage(byte[] discoveryPacket) throws UnknownHostException
+	   public void HandleBluetoothDiscoveryMessage(byte[] discoveryPacket) throws UnknownHostException, UnsupportedEncodingException
 	   {
 		  
 		   
@@ -311,11 +317,12 @@ public class RoutingManager
 		       byte[] path = new byte[8096-1024]; 
 		       System.arraycopy(discoveryPacket, 1, service, 0, 1023);
 		       System.arraycopy(discoveryPacket, 1024, path, 0, 8096-1024); 
-		       String serviceName = service.toString();
-		       String pathStr = path.toString();  
+		       String serviceName = ByteUtil.ByteArrayToString(service);
+		       String pathStr = ByteUtil.ByteArrayToString(path);  
 		       
+		      
 		     
-		       
+		     
 		       // if we can , send response packet immediately   
 		       if (ConfigManager.Get("USE" + serviceName) == "yes" )
 		       {
@@ -324,12 +331,11 @@ public class RoutingManager
 		    	   
 		    	   // get the previous node's name
 		    	   String previousNodeName = GetLastNodeName(pathStr);
-		    	   String path2 =   RemoveLastNodeName(pathStr);
-		    	   
-		    	   
-		    	   
+		  
+		    	   pathStr = joinNodes(pathStr,GetBluetoothName());      
+		      	   String path2 =   RemoveLastNodeName(pathStr);
 		    	   SendResponseMessageBluetooth(serviceName, pathStr, path2, previousNodeName);
-		              	   
+		                  	   
 		       
 		       }
 		       else
