@@ -44,8 +44,23 @@ public class SMSActivity extends Activity
 				//deviceIndex = ConfigManager.Get("useService").indexOf(':'); 
 				String deviceName = ConfigManager.Get("useService");//.substring(0,deviceIndex);
 				firstDev = deviceName;  
-				String destDev = RoutingManager.theRouter.getServicePath("SMS").split("#")[1].split(":")[0];
-				RoutingManager.theRouter.SendRequestMessageBluetoothSMS("SMS", RoutingManager.theRouter.getServicePath("SMS"), destPh, msg, destDev);
+				String destDev ;
+				//= RoutingManager.theRouter.getServicePath("SMS").split("#")[1].split(":")[0];
+				 String prefPath ; 
+				if ( ConfigManager.configValues.containsKey("SMS_PATH"))
+				{
+				
+				       prefPath =  ConfigManager.Get("SMS_PATH");  
+				}
+				else
+				{
+					   prefPath =   RoutingManager.theRouter.getServicePath("SMS"); 
+					
+				}
+				destDev  = prefPath.split("#")[1].split(":")[0];
+				
+				
+				RoutingManager.theRouter.SendRequestMessageBluetoothSMS("SMS",prefPath, destPh, msg, destDev);
 				
 				
 			}

@@ -54,6 +54,11 @@ public class RoutingManager
 		return nodes.length;
 	}
 
+	public Set<String> getPassiveKeys()
+	{
+	      return passiveRouteMap.keySet(); 
+	}
+	
 	/*
 	 * Add a new path to the router with its service.
 	 */
