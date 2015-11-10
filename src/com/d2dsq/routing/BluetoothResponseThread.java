@@ -15,6 +15,10 @@ public class BluetoothResponseThread extends Thread
 	private String path2; 
 	private String desDev; 
 	private com.d2dsq.models.Message mes; 
+	
+
+	
+	
 	public BluetoothResponseThread(String ser, String path1, String path2, String desDev)
 	{
 		service = ser;

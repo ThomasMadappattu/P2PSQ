@@ -8,40 +8,41 @@ import java.net.MalformedURLException;
 import java.net.NetworkInterface;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 public class GrabPage {
 
 	
 	
-	public void grabWebPage(String url){
+	public static byte[] grabWebPage(String url){
 		// variable declarations
-		final int CONTENT_SIZE = 99999; // content size
 		URL requestedUrl = null; // url
 		InputStream input = null; // inputStream
  		BufferedReader buffer = null; // bufferReader
 		String line; // line
-		byte [] htmlContent; // byte array for the content
 		
+		// linked list that stores byte arrays
+		LinkedList<byte[]> htmlContent = new LinkedList<byte[]>();
+
 		try {
 			requestedUrl = new URL(url);
 			input = requestedUrl.openStream();
 			buffer = new BufferedReader(new InputStreamReader(input));
-			htmlContent = new byte[CONTENT_SIZE];
 			
 			// read html page
-			int destPos = 0;
 			while ( ( line = buffer.readLine() ) != null ){
+				
 				// line to byte array
 				byte[] byteLine = line.getBytes();
-				// copy line to content array
-				System.arraycopy(byteLine, 0, htmlContent, destPos, line.length());
-				destPos += line.length(); // increase the destination position
+				
+				// copy byte line list to html Content
+				htmlContent.addLast(byteLine);
+
 				
 				// print the result
-				// String byteString = new String(byteLine, "UTF-8");
-				
-				// System.out.println(byteString);
-			}
+				//System.out.println(new String(byteLine));
+			} // while
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -50,10 +51,21 @@ public class GrabPage {
 			e.printStackTrace();
 		}
 
+		int sizeOfArray = 0;
+		for ( int i = 0; i < htmlContent.size(); i ++ ){
+			sizeOfArray += htmlContent.get(i).length;
+		}
 		
+		byte[] resultArray = new byte[sizeOfArray];
+		int destPos = 0;
+		for ( int i = 0; i < htmlContent.size(); i ++ ){
+			System.arraycopy(htmlContent.get(i), 0, resultArray, destPos, htmlContent.get(i).length);
+			destPos += htmlContent.get(i).length;
+		}
 		
+		return resultArray;
 	} // grabWebPage function
 	
-
+	
 
 }

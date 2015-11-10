@@ -6,6 +6,8 @@ import com.example.test123.R.layout;
 import com.example.test123.R.menu;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.app.Activity;
 import android.view.Menu;
 import android.app.Activity;
@@ -21,6 +23,38 @@ public class BrowserActivity extends Activity implements OnClickListener
 	WebView page;
 	EditText url;
 
+	
+	public Handler m_GetPageRequest = new Handler()
+	
+	{
+	        public void handleMessage (Message mes)
+	        {
+	        
+	        	if ( mes.arg1 ==  HmtlConstants.HTML_SHOW_PAGE )
+	        	{
+	        		
+	        		byte[] pageData = (byte[])mes.obj;
+	                page.loadData(new String(pageData), "text/html", "utf-8");
+	                super.handleMessage(mes);
+	        		
+	        	}
+	        	
+	        }
+		
+	};
+	
+	public boolean shouldOverrideUrlLoading(WebView view, String url) 
+	{
+		
+	    
+		// Make request here 
+	  
+		
+		return false;
+	  }
+	
+	
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -36,7 +70,7 @@ public class BrowserActivity extends Activity implements OnClickListener
 		page.getSettings().setBuiltInZoomControls(true);
 
 		page.setWebViewClient(new PageViewClient());
-		page.loadUrl("https://piazza.com");
+		
 
 		findViewById(R.id.bGo).setOnClickListener(this);
 		findViewById(R.id.bBack).setOnClickListener(this);
@@ -44,6 +78,7 @@ public class BrowserActivity extends Activity implements OnClickListener
 		findViewById(R.id.bRefresh).setOnClickListener(this);
 		findViewById(R.id.bClear).setOnClickListener(this);
 
+	   
 	}
 
 	@Override

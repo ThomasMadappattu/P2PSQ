@@ -319,7 +319,10 @@ public class MainActivity extends Activity
 		case R.id.discover_resource: 
 			try
 			{
+				// SMS 
 				RoutingManager.theRouter.SendDiscoverMessagesBluetooth("SMS");
+				// Internet 
+				RoutingManager.theRouter.SendDiscoverMessagesBluetooth("INET");
 			} catch (UnknownHostException e)
 			{
 				// TODO Auto-generated catch block

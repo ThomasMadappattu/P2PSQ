@@ -3,6 +3,7 @@ package com.d2dsq.models;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.net.InetAddress;
 
 import android.content.Context;
@@ -134,6 +135,37 @@ public class Message implements Serializable{
 		
 		return responsePacket; 
 	}
+	
+	public byte[] CreateResponsePacketWithData(byte packType)
+	{
+		
+		byte[] responsePacket = new byte[ 2 * DISCOVER_SIZE + 4 + 1 + byteArray.length] ; 
+		byte[] bPath =  path.getBytes(); 
+		byte[] bService = service.getBytes(); 
+		byte[] bPath2 =  respPath.getBytes(); 
+	   
+		responsePacket[0] = RESPONSE_MESSAGE; 
+		   
+		System.arraycopy(bService, 0, responsePacket, 1, bService.length); 
+		System.arraycopy(bPath, 0, responsePacket, 1024, bPath.length);
+		System.arraycopy(bPath2, 0, responsePacket, 8096, bPath2.length); 
+		
+		
+		BigInteger packetLen = BigInteger.valueOf(byteArray.length);  
+		byte[] respLen = packetLen.toByteArray();
+	    
+		
+		// set packet Type  
+		responsePacket[ 2 * DISCOVER_SIZE + 4 + 1] = packType; 
+		
+		System.arraycopy(respLen,0,responsePacket , 2 * DISCOVER_SIZE,respLen.length ); 	
+		System.arraycopy(byteArray, 0, responsePacket,  2 * DISCOVER_SIZE + 4,  byteArray.length);
+	    
+	    
+	    return responsePacket; 
+		
+	}
+	
 	
 	public byte[] CreateDiscoverPacketByteArray()
 	{
