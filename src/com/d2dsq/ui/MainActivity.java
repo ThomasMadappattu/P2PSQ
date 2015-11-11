@@ -232,7 +232,18 @@ public class MainActivity extends Activity
 						
 						
 					}
-				
+					else if ( packet[0]  == com.d2dsq.models.Message.RESPONSE_MESSAGE_DATA )
+					{
+						try
+						{
+							RoutingManager.theRouter.HandleBluetoothResponseDataMessage(packet);
+						} catch (UnsupportedEncodingException e)
+						{
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						
+					}
 
 					break;
 

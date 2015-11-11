@@ -3,10 +3,12 @@ package com.d2dsq.routing;
 import android.bluetooth.BluetoothDevice;
 
 import com.d2dsq.radio.*;
+import com.d2dsq.ui.MainApplication;
 import com.d2dsq.utils.ByteUtil;
 import com.d2dsq.utils.ConfigManager;
 
 import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -218,7 +220,18 @@ public class RoutingManager
 		th.start();
 
 	}
+	public void SendRequestMessageBluetoothInet(String service, String path,
+			 String url, String destDevice)
+	{
+		BluetoothRequestThread th = new BluetoothRequestThread();
+		th.setDestPh(" ");
+		th.setService(service);
+		th.setPath(path);
+		th.setTextMsg(url);
+		th.setDesDev(destDevice);
+		th.start();
 
+	}
 	public String GetBluetoothName()
 	{
 
@@ -367,6 +380,71 @@ public class RoutingManager
 
 		}
 		return newPath;
+	}
+	
+	
+	public void HandleBluetoothResponseDataMessage(byte[] responseDataPacket ) throws UnsupportedEncodingException
+	{
+		
+		// Seperate out path1 , path2
+				byte[] path1 = new byte[8096 - 1024];
+				byte[] path2 = new byte[8096];
+				byte[] service = new byte[1025];
+				byte[] dataLen  = new byte[4];
+				byte[] data; 
+				int dataLenInt; 
+				System.arraycopy(responseDataPacket, 1024, path1, 0, 8096 - 1024);
+				System.arraycopy(responseDataPacket, 8096, path2, 0, 8096);
+				System.arraycopy(responseDataPacket, 1, service, 0, 1023);
+
+				String path1Str = ByteUtil.ByteArrayToString(path1);
+				String path2Str = ByteUtil.ByteArrayToString(path2);
+				String serviceName = ByteUtil.ByteArrayToString(service);
+
+				byte packType = responseDataPacket[ 2 * 8096 + 4 + 1];
+			    System.arraycopy(responseDataPacket, 2 * 8096, dataLen, 0, 4);
+				
+			    BigInteger len = new BigInteger(dataLen);
+			    dataLenInt = len.intValue();  
+			    
+			    data = new byte[dataLenInt]; 
+			    
+			    System.arraycopy(responseDataPacket, 2 * 8096 + 4 + 2,data , 0, dataLenInt);
+			    
+				String[] nodes = path2Str.split("#");
+				
+				/* 
+				 * if the response message is meant for this node , then update routing tables
+				*/
+				if ((nodes.length == 1) && (GetLastNodeName(path2Str)
+						.compareTo(BluetoothUtil.adapter.getName()) == 0))
+				{
+					
+					 //At this point, there might be more than one possible
+					 //service paths, user should choose one of them.
+					 
+				     // Handle Internet and Camera Packets 
+					MainApplication.dataQueue.add(data); 
+					
+				}
+
+				/*
+				 * If the response message has not arrived at source node,
+				 * update send the response message again.
+				 */
+				if ( (nodes.length != 1) || (GetLastNodeName(path2Str).compareTo(BluetoothUtil.adapter.getName()) != 0) )
+				{
+					String previousNodeName = GetLastNodeName(path2Str);
+					String newPath = RemoveLastNodeName(path2Str);
+
+					SendResponseMessageBluetooth(serviceName, path1Str, newPath,
+							previousNodeName);
+				}else{
+					// response message arrived at source node
+					return; // end
+				}
+		
+		
 	}
 
 	public void HandleBluetoothDiscoveryMessage(byte[] discoveryPacket)

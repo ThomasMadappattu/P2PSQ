@@ -27,7 +27,9 @@ public class Message implements Serializable{
 
 	public static final int REQUEST_MESSAGE_SMS = 10; 
 	public static final int REQUEST_MESSAGE_CAM = 11; 
-	public static final int REQUEST_MESSAGE_INET = 12; 
+	public static final int REQUEST_MESSAGE_INET = 12;
+	
+	public static final int RESPONSE_MESSAGE_DATA = 13; 
  
 	
 	
@@ -162,6 +164,8 @@ public class Message implements Serializable{
 		System.arraycopy(byteArray, 0, responsePacket,  2 * DISCOVER_SIZE + 4,  byteArray.length);
 	    
 	    
+		
+		
 	    return responsePacket; 
 		
 	}

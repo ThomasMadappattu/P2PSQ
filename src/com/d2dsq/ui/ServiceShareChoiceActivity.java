@@ -110,7 +110,13 @@ public class ServiceShareChoiceActivity extends Activity
 					}
 					
 					// do the same thing for camera internet and other services 
-					
+					if ( currentItem.contains("INET@") ) 
+					{
+						
+					     ConfigManager.Set("INET_PATH", currentItem.split("@")[1]);
+					   
+						
+					}
 					
 				}
 				

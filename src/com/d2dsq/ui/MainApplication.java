@@ -26,6 +26,8 @@ public class MainApplication extends Application
     protected static ProgressData progressData = new ProgressData();
     protected static  ConcurrentLinkedQueue<Packet> packetQueue = new ConcurrentLinkedQueue<Packet> () ;
 	
+    public static ConcurrentLinkedQueue<byte[]> dataQueue = new ConcurrentLinkedQueue<byte[]> () ;
+    
     
     // Application related constants 
     public  static final int MSG_WIFI_SERVER = 1; 
