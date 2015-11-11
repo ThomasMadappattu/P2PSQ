@@ -37,6 +37,12 @@ public class RoutingManager
 	// bluetooth prefix
 	public final static String BLUETOOTH_PREFIX = ":B";
 
+	
+	
+	public final static int  TYPE_BLUETOOTH = 1;
+	public final static int  TYPE_WIFI = 2 ;; 
+	
+	public final static int  TYPE_BOTH = 3; 
 	/*
 	 * Get passive route map paths to show the user possible paths that consist
 	 * of desired service.
@@ -184,7 +190,7 @@ public class RoutingManager
 	{
 
 		BluetoothDiscoverThread disThread = new BluetoothDiscoverThread(service,
-				GetBluetoothName());
+				GetBluetoothName(), RoutingManager.TYPE_BLUETOOTH);
 		disThread.start();
 
 	}
@@ -194,7 +200,7 @@ public class RoutingManager
 	{
 
 		BluetoothDiscoverThread disThread = new BluetoothDiscoverThread(service,
-				path);
+				path,RoutingManager.TYPE_BLUETOOTH);
 		disThread.start();
 
 	}
@@ -203,11 +209,67 @@ public class RoutingManager
 			String path2, String device)
 	{
 		BluetoothResponseThread th = new BluetoothResponseThread(service, path1,
-				path2, device);
+				path2, device,RoutingManager.TYPE_BLUETOOTH);
 		th.start();
 
 	}
 
+	public void SendDiscoverMessagesWifi(String service)
+			throws UnknownHostException
+	{
+
+		BluetoothDiscoverThread disThread = new BluetoothDiscoverThread(service,
+				GetBluetoothName(), RoutingManager.TYPE_WIFI);
+		disThread.start();
+
+	}
+
+	public void SendDiscoverMessageWifi(String service, String path)
+			throws UnknownHostException
+	{
+
+		BluetoothDiscoverThread disThread = new BluetoothDiscoverThread(service,
+				path,RoutingManager.TYPE_WIFI);
+		disThread.start();
+
+	}
+
+	public void SendResponseMessageWifi(String service, String path1,
+			String path2, String device)
+	{
+		BluetoothResponseThread th = new BluetoothResponseThread(service, path1,
+				path2, device,RoutingManager.TYPE_WIFI);
+		th.start();
+
+	}
+
+	public void SendRequestMessageWifiSMS(String service, String path,
+			String destPh, String text, String destDevice)
+	{
+		BluetoothRequestThread th = new BluetoothRequestThread();
+		th.setDestPh(destPh);
+		th.setService(service);
+		th.setPath(path);
+		th.setTextMsg(text);
+		th.setDesDev(destDevice);
+		th.setType(TYPE_WIFI);
+		th.start();
+
+	}
+	public void SendRequestMessageWifiInet(String service, String path,
+			 String url, String destDevice)
+	{
+		BluetoothRequestThread th = new BluetoothRequestThread();
+		th.setDestPh(" ");
+		th.setService(service);
+		th.setPath(path);
+		th.setTextMsg(url);
+		th.setType(TYPE_WIFI);
+		th.setDesDev(destDevice);
+		th.start();
+
+	}
+	
 	public void SendRequestMessageBluetoothSMS(String service, String path,
 			String destPh, String text, String destDevice)
 	{
@@ -217,6 +279,7 @@ public class RoutingManager
 		th.setPath(path);
 		th.setTextMsg(text);
 		th.setDesDev(destDevice);
+		th.setType(TYPE_BLUETOOTH);
 		th.start();
 
 	}
@@ -229,6 +292,7 @@ public class RoutingManager
 		th.setPath(path);
 		th.setTextMsg(url);
 		th.setDesDev(destDevice);
+		th.setType(TYPE_BLUETOOTH); 
 		th.start();
 
 	}
@@ -283,7 +347,8 @@ public class RoutingManager
 		}
 
 	}
-
+     
+	
 	public void HandleBluetoothResponseMessage(byte[] responsePacket)
 			throws UnsupportedEncodingException
 	{
@@ -335,7 +400,60 @@ public class RoutingManager
 		}
 
 	}
+    
 
+	public void HandleWifiResponseMessage(byte[] responsePacket)
+			throws UnsupportedEncodingException
+	{
+
+		// Seperate out path1 , path2
+		byte[] path1 = new byte[8096 - 1024];
+		byte[] path2 = new byte[8096];
+		byte[] service = new byte[1025];
+
+		System.arraycopy(responsePacket, 1024, path1, 0, 8096 - 1024);
+		System.arraycopy(responsePacket, 8096, path2, 0, 8096);
+		System.arraycopy(responsePacket, 1, service, 0, 1023);
+
+		String path1Str = ByteUtil.ByteArrayToString(path1);
+		String path2Str = ByteUtil.ByteArrayToString(path2);
+		String serviceName = ByteUtil.ByteArrayToString(service);
+
+		
+		String[] nodes = path2Str.split("#");
+		
+		/* 
+		 * if the response message is meant for this node , then update routing tables
+		*/
+		if ((nodes.length == 1) && (GetLastNodeName(path2Str)
+				.compareTo(WifiUtil.GetWifiName().split(":")[0]) == 0))
+		{
+			
+			 //At this point, there might be more than one possible
+			 //service paths, user should choose one of them.
+			 
+			addRoute(serviceName, path1Str);
+
+		}
+
+		/*
+		 * If the response message has not arrived at source node,
+		 * update send the response message again.
+		 */
+		if ( (nodes.length != 1) || (GetLastNodeName(path2Str).compareTo(WifiUtil.GetWifiName().split(":")[0]) != 0) )
+		{
+			String previousNodeName = GetLastNodeName(path2Str);
+			String newPath = RemoveLastNodeName(path2Str);
+
+			SendResponseMessageWifi(serviceName, path1Str, newPath,
+					previousNodeName);
+		}else{
+			// response message arrived at source node
+			return; // end
+		}
+
+	}
+	
 	// last node operations
 	public String GetLastNodeName(String path)
 	{
@@ -438,6 +556,70 @@ public class RoutingManager
 					String newPath = RemoveLastNodeName(path2Str);
 
 					SendResponseMessageBluetooth(serviceName, path1Str, newPath,
+							previousNodeName);
+				}else{
+					// response message arrived at source node
+					return; // end
+				}
+		
+		
+	}
+    
+	public void HandleWifiResponseDataMessage(byte[] responseDataPacket ) throws UnsupportedEncodingException
+	{
+		
+		// Seperate out path1 , path2
+				byte[] path1 = new byte[8096 - 1024];
+				byte[] path2 = new byte[8096];
+				byte[] service = new byte[1025];
+				byte[] dataLen  = new byte[4];
+				byte[] data; 
+				int dataLenInt; 
+				System.arraycopy(responseDataPacket, 1024, path1, 0, 8096 - 1024);
+				System.arraycopy(responseDataPacket, 8096, path2, 0, 8096);
+				System.arraycopy(responseDataPacket, 1, service, 0, 1023);
+
+				String path1Str = ByteUtil.ByteArrayToString(path1);
+				String path2Str = ByteUtil.ByteArrayToString(path2);
+				String serviceName = ByteUtil.ByteArrayToString(service);
+
+				byte packType = responseDataPacket[ 2 * 8096 + 4 + 1];
+			    System.arraycopy(responseDataPacket, 2 * 8096, dataLen, 0, 4);
+				
+			    BigInteger len = new BigInteger(dataLen);
+			    dataLenInt = len.intValue();  
+			    
+			    data = new byte[dataLenInt]; 
+			    
+			    System.arraycopy(responseDataPacket, 2 * 8096 + 4 + 2,data , 0, dataLenInt);
+			    
+				String[] nodes = path2Str.split("#");
+				
+				/* 
+				 * if the response message is meant for this node , then update routing tables
+				*/
+				if ((nodes.length == 1) && (GetLastNodeName(path2Str)
+						.compareTo(BluetoothUtil.adapter.getName()) == 0))
+				{
+					
+					 //At this point, there might be more than one possible
+					 //service paths, user should choose one of them.
+					 
+				     // Handle Internet and Camera Packets 
+					MainApplication.dataQueue.add(data); 
+					
+				}
+
+				/*
+				 * If the response message has not arrived at source node,
+				 * update send the response message again.
+				 */
+				if ( (nodes.length != 1) || (GetLastNodeName(path2Str).compareTo(BluetoothUtil.adapter.getName()) != 0) )
+				{
+					String previousNodeName = GetLastNodeName(path2Str);
+					String newPath = RemoveLastNodeName(path2Str);
+
+					SendResponseMessageWifi(serviceName, path1Str, newPath,
 							previousNodeName);
 				}else{
 					// response message arrived at source node

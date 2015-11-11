@@ -32,6 +32,7 @@ public class WifiUtil
 	  
 	  public  static Set<String> neighbours = new HashSet<String>(); 
 	  
+	  public static String WIFI_PREFIX = ":W"; 
 	  
 	  public static  Handler m_WifiHandler = new Handler()
 	  {
@@ -119,9 +120,9 @@ public class WifiUtil
     	 
   	  }
   		
-      public String GetWifiName()
+      public static String GetWifiName()
       {
-    	  return IPUtils.getLocalIPAddress(); 
+    	  return IPUtils.getLocalIPAddress() + WIFI_PREFIX; 
     	  
       }
 

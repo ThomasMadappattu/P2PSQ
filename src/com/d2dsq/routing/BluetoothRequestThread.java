@@ -6,12 +6,20 @@ import java.net.UnknownHostException;
 import android.bluetooth.BluetoothDevice;
 
 import com.d2dsq.radio.BluetoothUtil;
+import com.d2dsq.radio.WifiUtil;
 
 public class BluetoothRequestThread extends Thread
 {
 
 	private String service;
-
+    int type; 
+    
+    
+	public void setType(int t)
+	{
+		
+		type = t; 
+	}
 	public String getService()
 	{
 		return service;
@@ -95,6 +103,8 @@ public class BluetoothRequestThread extends Thread
 			e.printStackTrace();
 		}
 
+		if ( type == RoutingManager.TYPE_BLUETOOTH )
+		{
 		// Get the paired devices
 		BluetoothUtil.GetPairedDevices();
 
@@ -105,6 +115,19 @@ public class BluetoothRequestThread extends Thread
 				BluetoothUtil.SendData(mes.CreateSMSRequestPacket(), dev);
 			}
 
+		}
+		}
+		else  if ( type == RoutingManager.TYPE_WIFI)
+		{
+			
+		   for (  String ip: WifiUtil.neighbours)
+		   {
+			    if ( ip.compareTo(desDev) == 0 )
+ 
+			    	 WifiUtil.SendData(mes.CreateSMSRequestPacket(), ip);
+		   
+		   }
+		
 		}
 
 	}
