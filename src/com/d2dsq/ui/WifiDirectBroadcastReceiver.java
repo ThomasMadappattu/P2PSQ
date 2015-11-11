@@ -4,6 +4,7 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.d2dsq.radio.WifiUtil;
 import com.d2dsq.ui.*;
 
 import android.app.Activity;
@@ -120,6 +121,9 @@ public class WifiDirectBroadcastReceiver extends BroadcastReceiver{
 						    // MainApplication.wifiMsgHandler.sendMessage(msg1); 
 							// Handle this message later,  ignore it for now 
 							
+							WifiUtil.isGroupOwner = true; 
+							WifiUtil.groupOwnerAdderess = info.groupOwnerAddress; 
+							
 						}
 						
 						/******************************************************************
@@ -132,7 +136,10 @@ public class WifiDirectBroadcastReceiver extends BroadcastReceiver{
 							
 							// MainApplication.wifiMsgHandler.sendMessage(msg2);
 							
-							// Handle this message later, ignore for now  
+							// Handle this message later, ignore for now 
+							
+							WifiUtil.isGroupOwner = false; 
+							WifiUtil.groupOwnerAdderess = info.groupOwnerAddress; 
 						}	
 					}
 				});				

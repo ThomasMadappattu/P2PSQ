@@ -30,4 +30,11 @@
 		<nature>com.android.ide.eclipse.adt.AndroidNature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>src/com/d2dsq/radio/WifiClientThread.java</name>
+			<type>1</type>
+			<location>/home/sandman/dev/P2PSQ/src/com/d2dsq/radio/WifiClientThread.java</location>
+		</link>
+	</linkedResources>
 </projectDescription>

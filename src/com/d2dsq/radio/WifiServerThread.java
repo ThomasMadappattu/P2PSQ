@@ -14,7 +14,7 @@ import com.d2dsq.routing.*;
 public class WifiServerThread implements Runnable {
 
 	private ServerSocket serverSocket;
-	private ConcurrentLinkedQueue<Packet> packetQueue;
+	private ConcurrentLinkedQueue<byte[]> packetQueue;
 	private static final String TAG = "WifiServerThread"; 
 	
 
@@ -23,7 +23,7 @@ public class WifiServerThread implements Runnable {
 	 * @param port
 	 * @param queue
 	 */
-	public WifiServerThread(int port, ConcurrentLinkedQueue<Packet> queue) {
+	public WifiServerThread(int port, ConcurrentLinkedQueue<byte[]> queue) {
 		try {
 			Log.v(TAG , "Creating new Server Socket"); 
 			this.serverSocket = new ServerSocket(port);
@@ -47,6 +47,12 @@ public class WifiServerThread implements Runnable {
 				
 				Log.v(TAG , "Accepting"); 
 				socket = this.serverSocket.accept();
+				if (WifiUtil.isGroupOwner)
+				{
+					WifiUtil.neighbours.add(socket.getInetAddress().getHostAddress());
+					Log.v("server socket", "adding client"); 
+				}
+				
 				InputStream in = socket.getInputStream();
 				ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
@@ -59,12 +65,15 @@ public class WifiServerThread implements Runnable {
 				}
 
 				byte trimmedBytes[] = baos.toByteArray();
-				Packet p = Packet.deserialize(trimmedBytes);
-				p.setSenderIP(socket.getInetAddress().getHostAddress());
-				Log.v(TAG,"Got something "); 
-				this.packetQueue.add(p);
+				
+				
+				Log.v(TAG,"Got something ");
+			
+				this.packetQueue.add(trimmedBytes);
 				socket.close();
-			} catch (IOException e) {
+				WifiUtil.m_WifiHandler.sendEmptyMessage(1); 
+			} catch (IOException e) 
+			{
 				e.printStackTrace();
 			}
 		}

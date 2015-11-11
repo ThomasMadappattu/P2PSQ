@@ -5,8 +5,11 @@ import com.d2dsq.utils.ConfigManager;
 import com.d2dsq.utils.SerializeUtil;
 import com.example.test123.R;
 
+import android.net.NetworkInfo;
+import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.WifiP2pManager.Channel;
+import android.net.wifi.p2p.WifiP2pManager.ConnectionInfoListener;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -128,6 +131,9 @@ public class MainActivity extends Activity
 		mReceiver.setmChannel(mChannel);
 		mReceiver.setmActivity(this);
 
+	    WifiP2pInfo info = new WifiP2pInfo(); 
+	    
+		
 		mIntentFilter = new IntentFilter();
 		mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
 		mIntentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
@@ -136,6 +142,8 @@ public class MainActivity extends Activity
 		mIntentFilter
 				.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
 
+		
+		
 		// MainApplication.serverThread.start();
 
 		
