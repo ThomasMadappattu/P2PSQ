@@ -28,7 +28,8 @@ public class MainApplication extends Application
 	
     public static ConcurrentLinkedQueue<byte[]> dataQueue = new ConcurrentLinkedQueue<byte[]> () ;
     
-    
+    public static Handler wifiMessage; 
+        
     // Application related constants 
     public  static final int MSG_WIFI_SERVER = 1; 
     public  static final int MSG_WIFI_CLIENT = 2; 

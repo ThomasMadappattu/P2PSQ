@@ -107,7 +107,7 @@ public class Message implements Serializable{
 		byte[] bPath =  path.getBytes(); 
 		byte[] destPh = destPhone.getBytes(); 
 		byte[] text   = mText.getBytes(); 
-		
+		byte[] bPath2 =  respPath.getBytes(); 
 		
 		SMSRequestPacket[0] = REQUEST_MESSAGE; 
 		System.arraycopy(bService, 0, SMSRequestPacket, 1, bService.length); 
@@ -115,6 +115,7 @@ public class Message implements Serializable{
 		SMSRequestPacket[8096] = REQUEST_MESSAGE_SMS;
 		System.arraycopy(destPh, 0, SMSRequestPacket, 8097, destPh.length); 
 		System.arraycopy(text, 0, SMSRequestPacket, 8097 + 1024 , text.length); 
+		System.arraycopy(bPath2, 0, SMSRequestPacket, 8097 + 1024+2048 , bPath2.length); 
 		
 		
 	
@@ -146,7 +147,7 @@ public class Message implements Serializable{
 		byte[] bService = service.getBytes(); 
 		byte[] bPath2 =  respPath.getBytes(); 
 	   
-		responsePacket[0] = RESPONSE_MESSAGE; 
+		responsePacket[0] = Message.RESPONSE_MESSAGE_DATA; 
 		   
 		System.arraycopy(bService, 0, responsePacket, 1, bService.length); 
 		System.arraycopy(bPath, 0, responsePacket, 1024, bPath.length);

@@ -23,7 +23,7 @@ public class BluetoothDiscoverThread extends Thread
 	{
 		service = ser; 
 		path = pa; 
-		
+	    this.type = type;	
 		
 	
 		
@@ -63,7 +63,7 @@ public class BluetoothDiscoverThread extends Thread
 	    }
 	    else if ( type  == RoutingManager.TYPE_WIFI )
 	    {
-	    	if (  WifiUtil.isGroupOwner )
+	    	if (  !WifiUtil.isGroupOwner )
 	    	{
 	    	       WifiUtil.SendData(mes.CreateDiscoverPacketByteArray(), WifiUtil.groupOwnerAdderess.getHostAddress());
 	    	}

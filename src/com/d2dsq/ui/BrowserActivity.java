@@ -46,6 +46,7 @@ public class BrowserActivity extends Activity implements OnClickListener
 		public void onFinish()
 		{
 			// TODO Auto-generated method stub
+			this.start();
 			
 		}
 	};
@@ -71,8 +72,16 @@ public class BrowserActivity extends Activity implements OnClickListener
 		}
 		
 		String destDev  = prefPath.split("#")[1].split(":")[0];
-		RoutingManager.theRouter.SendRequestMessageBluetoothInet("INET", prefPath, url, destDev);  	  
-		
+		String nextNode = prefPath.split("#")[1];
+		if ( RoutingManager.GetNodeType(nextNode)  == RoutingManager.TYPE_BLUETOOTH ) 
+		{
+		    RoutingManager.theRouter.SendRequestMessageBluetoothInet("INET", prefPath, url, destDev);  	  
+		}
+		else 
+		{
+			RoutingManager.theRouter.SendRequestMessageWifiInet("INET", prefPath, url, destDev);  	  
+			
+		}
 		return false;
 	  }
 	
@@ -125,7 +134,32 @@ public class BrowserActivity extends Activity implements OnClickListener
 			{
 				url.setText("http://" + url.getText().toString());
 			}
-			page.loadUrl(url.getText().toString());
+			//
+			String prefPath =   RoutingManager.theRouter.getServicePath("INET"); 
+			if ( ConfigManager.configValues.containsKey("INET_PATH"))
+			{
+			
+			       prefPath =  ConfigManager.Get("INET_PATH");  
+			}
+			else
+			{
+				   prefPath =   RoutingManager.theRouter.getServicePath("INET"); 
+				
+			}
+			
+			String destDev  = prefPath.split("#")[1].split(":")[0];
+			String nextNode = prefPath.split("#")[1];
+			
+			if ( RoutingManager.GetNodeType(nextNode)  == RoutingManager.TYPE_BLUETOOTH ) 
+			{
+			    RoutingManager.theRouter.SendRequestMessageBluetoothInet("INET", prefPath, url.getText().toString(), destDev);  	  
+			}
+			else 
+			{
+				
+				RoutingManager.theRouter.SendRequestMessageWifiInet("INET", prefPath, url.getText().toString(), destDev);  	  
+				
+			}	
 			
 			break;
 

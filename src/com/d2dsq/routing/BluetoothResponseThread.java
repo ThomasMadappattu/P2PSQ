@@ -5,6 +5,7 @@ import java.net.UnknownHostException;
 
 import android.bluetooth.BluetoothDevice;
 
+import com.d2dsq.models.Message;
 import com.d2dsq.radio.BluetoothUtil;
 import com.d2dsq.radio.WifiUtil;
 
@@ -17,6 +18,24 @@ public class BluetoothResponseThread extends Thread
 	private String desDev;
 	private com.d2dsq.models.Message mes;
 	private int type;
+	private int packetType; 
+
+	private byte[] data; 
+	
+	byte[] packetSend; 
+	
+	public void SetPacketType( int type)
+	{
+		
+		packetType = type; 
+	}
+	
+	
+	public void SetData( byte[] d)
+	{
+		
+		data = d;
+	}
 
 	public BluetoothResponseThread(String ser, String path1, String path2,
 			String desDev, int type)
@@ -33,11 +52,26 @@ public class BluetoothResponseThread extends Thread
 
 		try
 		{
+			
+			
 			mes = new com.d2dsq.models.Message(
 					com.d2dsq.models.Message.DISCOVER_MESSAGE, "sfsdsdf",
 					InetAddress.getLocalHost(), "ewssdfd");
 			mes.SetDiscoverMessage(service, path1);
 			mes.setResponsePath(path2);
+			
+	        if ( packetType == Message.RESPONSE_MESSAGE_DATA )
+	        {
+	        	mes.setByteArray(data);
+	        	packetSend = mes.CreateResponsePacketWithData((byte)1); 
+	        	
+	        }
+	        else
+	        {
+	        	packetSend  = mes.CreateResponsePacket(); 
+	        	
+	        }
+			
 		} catch (UnknownHostException e)
 		{
 			// TODO Auto-generated catch block
@@ -52,21 +86,30 @@ public class BluetoothResponseThread extends Thread
 			{
 				if (dev.getName().compareTo(desDev) == 0)
 				{
-					BluetoothUtil.SendData(mes.CreateResponsePacket(), dev);
+					BluetoothUtil.SendData(packetSend, dev);
 
 				}
 
 			}
 		} else if (type == RoutingManager.TYPE_WIFI)
 		{
-			for (String ip : WifiUtil.neighbours)
+			
+			if ( !WifiUtil.isGroupOwner)
 			{
-				if (ip.compareTo(desDev) == 0)
+				WifiUtil.SendData(packetSend, WifiUtil.groupOwnerAdderess.getHostAddress());
+				
+			}
+			else
+			{
+				for (String ip : WifiUtil.neighbours)
 				{
+					if (ip.compareTo(desDev) == 0)
+					{
 
-					WifiUtil.SendData(mes.CreateResponsePacket(), ip);
+						WifiUtil.SendData(packetSend, ip);
+					}
+
 				}
-
 			}
 
 		}

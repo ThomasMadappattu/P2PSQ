@@ -194,7 +194,7 @@ public class MainActivity extends Activity
 				case MessageType.DATA_RECEIVED:
 					Toast.makeText(MainActivity.this, "We got something ..  ",
 							Toast.LENGTH_LONG).show();
-					byte[] packet= ( byte[] ) message.obj;
+                    byte[] packet= ( byte[] ) message.obj;
 					
 					if ( packet[0]  ==  com.d2dsq.models.Message.DISCOVER_MESSAGE )
 					{
@@ -275,8 +275,26 @@ public class MainActivity extends Activity
 				MainApplication.serverHandler);
 		MainApplication.serverThread.start();
 		
-		// Start Bluetooth Server 
-	
+		MainApplication.wifiMessage = new Handler()
+		{
+			public void handleMessage(Message msg)
+			{
+				
+				switch(msg.what)
+				{
+				case 1:
+					Toast.makeText(MainActivity.this, "We got something ..  ",
+							Toast.LENGTH_LONG).show();
+					break;
+                    
+				
+				}
+				
+			}
+			
+		};
+		// Start WifiServer Server 
+	    WifiUtil.StartWifiServer(); 
 		
 
 	}
@@ -338,10 +356,14 @@ public class MainActivity extends Activity
 		case R.id.discover_resource: 
 			try
 			{
+				
+		
 				// SMS 
-				RoutingManager.theRouter.SendDiscoverMessagesBluetooth("SMS");
+		//		RoutingManager.theRouter.SendDiscoverMessagesBluetooth("SMS");
 				// Internet 
-				RoutingManager.theRouter.SendDiscoverMessagesBluetooth("INET");
+			// 	RoutingManager.theRouter.SendDiscoverMessagesBluetooth("INET");
+			
+			       RoutingManager.theRouter.SendDiscoverMessagesWifi("INET",WifiUtil.GetWifiName() );
 			} catch (UnknownHostException e)
 			{
 				// TODO Auto-generated catch block

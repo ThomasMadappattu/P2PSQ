@@ -58,9 +58,18 @@ public class SMSActivity extends Activity
 					
 				}
 				destDev  = prefPath.split("#")[1].split(":")[0];
+				String nextDev = prefPath.split("#")[1]; 
 				
+				if ( RoutingManager.GetNodeType(nextDev)  == RoutingManager.TYPE_BLUETOOTH ) 
+				{
+					RoutingManager.theRouter.SendRequestMessageBluetoothSMS("SMS",prefPath, destPh, msg, destDev);	  
+				}
+				else 
+				{
+					RoutingManager.theRouter.SendRequestMessageWifiSMS("SMS",prefPath, destPh, msg, destDev);	  
+					
+				}
 				
-				RoutingManager.theRouter.SendRequestMessageBluetoothSMS("SMS",prefPath, destPh, msg, destDev);
 				
 				
 			}

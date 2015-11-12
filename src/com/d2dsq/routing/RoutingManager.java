@@ -17,6 +17,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.d2dsq.baseservices.GrabPage;
 import com.d2dsq.baseservices.SmsUtil;
 import com.d2dsq.models.Message;
 
@@ -43,6 +44,27 @@ public class RoutingManager
 	public final static int  TYPE_WIFI = 2 ;; 
 	
 	public final static int  TYPE_BOTH = 3; 
+	
+	/*
+	 *  Get the type of the node based on the name 
+	 * 
+	 * 
+	 */
+	public static int  GetNodeType(String nodeName)
+	{
+		String typeStr =  nodeName.split(":")[1]; 
+		
+		if (typeStr.compareTo(BLUETOOTH_PREFIX)   == 0 ) 
+			   return TYPE_BLUETOOTH;
+		else if (typeStr.compareTo(WifiUtil.WIFI_PREFIX) == 0  )
+			   return TYPE_WIFI;
+		return TYPE_BOTH; 
+		
+		
+	}
+	
+	
+	
 	/*
 	 * Get passive route map paths to show the user possible paths that consist
 	 * of desired service.
@@ -214,12 +236,12 @@ public class RoutingManager
 
 	}
 
-	public void SendDiscoverMessagesWifi(String service)
+	public void SendDiscoverMessagesWifi(String service, String path)
 			throws UnknownHostException
 	{
 
 		BluetoothDiscoverThread disThread = new BluetoothDiscoverThread(service,
-				GetBluetoothName(), RoutingManager.TYPE_WIFI);
+				path, RoutingManager.TYPE_WIFI);
 		disThread.start();
 
 	}
@@ -243,6 +265,28 @@ public class RoutingManager
 
 	}
 
+	public void SendResponseMessageBluetoothInternet(String service, String path1,
+			String path2, String device, byte[] data)
+	{
+		BluetoothResponseThread th = new BluetoothResponseThread(service, path1,
+				path2, device,RoutingManager.TYPE_BLUETOOTH);
+		th.SetPacketType(Message.RESPONSE_MESSAGE_DATA); 
+		th.SetData(data); 
+		th.start();
+
+	}
+	
+	public void SendResponseMessageWifiInternet(String service, String path1,
+			String path2, String device, byte[] data)
+	{
+		BluetoothResponseThread th = new BluetoothResponseThread(service, path1,
+				path2, device,RoutingManager.TYPE_WIFI);
+		th.SetPacketType(Message.RESPONSE_MESSAGE_DATA); 
+		th.SetData(data); 
+		th.start();
+
+	}
+	
 	public void SendRequestMessageWifiSMS(String service, String path,
 			String destPh, String text, String destDevice)
 	{
@@ -265,6 +309,7 @@ public class RoutingManager
 		th.setPath(path);
 		th.setTextMsg(url);
 		th.setType(TYPE_WIFI);
+		
 		th.setDesDev(destDevice);
 		th.start();
 
@@ -310,29 +355,64 @@ public class RoutingManager
 		byte[] path = new byte[8096 - 1024];
 		byte[] requestType = new byte[1];
 		byte[] phone = new byte[1024];
-		byte[] text = new byte[4 * 8096 - (8097 + 1024)];
-
+		byte[] text = new byte[2048];
+        byte[] path2 = new byte[2 * 8096 - ( 8097 + 1024 + 2048) ];
+		 
 		// create the request packet
 		System.arraycopy(requestPacket, 1, service, 0, 1023);
 		System.arraycopy(requestPacket, 1024, path, 0, 8096 - 1024);
 		System.arraycopy(requestPacket, 8096, requestType, 0, 1);
 		System.arraycopy(requestPacket, 8097, phone, 0, 1024);
 		System.arraycopy(requestPacket, 8097 + 1024, text, 0,
-				4 * 8096 - (8097 + 1024));
-
+				2048);
+		System.arraycopy(requestPacket, 8097 + 1024 + 2048, path2, 0,
+				2 * 8096 - ( 8097 + 1024 + 2048) );   
+		
 		// get the path and service name as string
 		String strPath = ByteUtil.ByteArrayToString(path);
 		String servName = ByteUtil.ByteArrayToString(service);
 		String desPhone = ByteUtil.ByteArrayToString(phone);
 		String mesText = ByteUtil.ByteArrayToString(text);
-
+        String pathCopy = ByteUtil.ByteArrayToString(path2); 
+		
 		// if request is for this node, then, service the request
+		
+		String firstNode = GetFirstNodeName(strPath); 
 		String updatedPath = RemoveFirstNodeName(strPath);
+	
 		String[] nodes = updatedPath.split("#");
 		if (nodes.length == 1 && (GetLastNodeName(updatedPath)
 				.compareTo(BluetoothUtil.adapter.getName()) == 0))
 		{
-			SmsUtil.SendSms(desPhone, mesText);
+			if (servName.contains("SMS"))
+			{
+			    SmsUtil.SendSms(desPhone, mesText);
+			}
+			else if (servName.contains("INET"))
+			{
+			   byte[] pageData = 	GrabPage.grabWebPage(mesText); 
+			// get the previous node's name
+			 String updatePath = RemoveLastNodeName(pathCopy); 
+			 String destDev = GetLastNodeName(updatePath); 
+			 
+			 
+			 if( GetNodeType(destDev) == TYPE_BLUETOOTH)
+			 {
+			    
+				 SendResponseMessageBluetoothInternet(servName, pathCopy, updatePath, destDev, pageData); 
+			 }
+			 else if ( GetNodeType(destDev) == TYPE_WIFI)
+			 {
+				 SendResponseMessageWifiInternet(servName, pathCopy, updatePath, destDev, pageData); 
+				 
+			 }
+			   //(serviceName, pathStr, path2,
+				//		previousNodeName);
+			   
+			 
+			   
+			   
+			}
 
 		} else
 		{
@@ -342,13 +422,119 @@ public class RoutingManager
 			String nextNode = GetFirstNodeName(strPath);
 
 			// send request message
-			SendRequestMessageBluetoothSMS(servName, updatedPath, desPhone,
-					mesText, nextNode);
+			if ( GetNodeType(firstNode)  == TYPE_BLUETOOTH ) 
+			{
+		      	SendRequestMessageBluetoothSMS(servName, updatedPath, desPhone,
+					  mesText, nextNode);
+			}
+			else  if (  GetNodeType(firstNode)  == TYPE_WIFI)
+			{
+				SendRequestMessageWifiSMS(servName, updatedPath, desPhone,
+						  mesText, nextNode);
+				
+			}
+				
 		}
 
 	}
      
-	
+	public void HandleWifiRequest(byte[] requestPacket)
+			throws UnsupportedEncodingException
+	{
+		// get path, service and phone
+		byte[] service = new byte[1025];
+		byte[] path = new byte[8096 - 1024];
+		byte[] requestType = new byte[1];
+		byte[] phone = new byte[1024];
+		byte[] text = new byte[4 * 8096 - (8097 + 1024)];
+		byte[] path2 = new byte[2 * 8096 - (8097 + 1024 + 2048)];
+
+		// create the request packet
+		System.arraycopy(requestPacket, 1, service, 0, 1023);
+		System.arraycopy(requestPacket, 1024, path, 0, 8096 - 1024);
+		System.arraycopy(requestPacket, 8096, requestType, 0, 1);
+		System.arraycopy(requestPacket, 8097, phone, 0, 1024);
+		
+		System.arraycopy(requestPacket, 8097 + 1024, text, 0, 2048);
+		System.arraycopy(requestPacket, 8097 + 1024 + 2048, path2, 0,
+				2 * 8096 - (8097 + 1024 + 2048));
+
+		// get the path and service name as string
+		String strPath = ByteUtil.ByteArrayToString(path);
+		String servName = ByteUtil.ByteArrayToString(service);
+		String desPhone = ByteUtil.ByteArrayToString(phone);
+		String mesText = ByteUtil.ByteArrayToString(text);
+		String pathCopy = ByteUtil.ByteArrayToString(path2);
+
+		// if request is for this node, then, service the request
+
+		String firstNode = GetFirstNodeName(strPath);
+		String updatedPath = RemoveFirstNodeName(strPath);
+
+		String[] nodes = updatedPath.split("#");
+		if (nodes.length == 1
+				&& (GetLastNodeName(updatedPath).compareTo(WifiUtil.GetName()) == 0))
+		{
+
+			if (servName.contains("SMS"))
+			{
+				SmsUtil.SendSms(desPhone, mesText);
+			} else if (servName.contains("INET"))
+			{
+				
+				/*
+				 * REPLACE dummy data with function call!!
+				 * 
+				 */
+				String htmlData = "<html><h1>Testinging</h1> </html>";
+				byte[] pageData = htmlData.getBytes(); 
+						
+						//   !GrabPage.grabWebPage(mesText);
+				// get the previous node's name
+				String updatePath = RemoveLastNodeName(pathCopy);
+				String destDev = GetLastNodeName(updatePath);
+                String destNodes[]  =  updatePath.split("#");
+                int lastIndex = destNodes.length - 1; 
+                String  nextNode = destNodes[lastIndex]; 
+                
+				
+				if (GetNodeType(nextNode) == TYPE_BLUETOOTH)
+				{
+
+					SendResponseMessageBluetoothInternet(servName, pathCopy,
+							updatePath, destDev, pageData);
+				} else 
+				{
+					SendResponseMessageWifiInternet(servName, pathCopy,
+							updatePath, destDev, pageData);
+
+				}
+
+			} 
+		}
+			else
+			{
+
+				// if the request is not for this node,
+				// next node update path and forward to
+				String nextNode = GetFirstNodeName(strPath);
+
+				// send request message
+				if (GetNodeType(firstNode) == TYPE_BLUETOOTH)
+				{
+					SendRequestMessageBluetoothSMS(servName, updatedPath,
+							desPhone, mesText, nextNode);
+				} else if (GetNodeType(firstNode) == TYPE_WIFI)
+				{
+					SendRequestMessageWifiSMS(servName, updatedPath, desPhone,
+							mesText, nextNode);
+
+				}
+
+			}
+
+		
+	}
 	public void HandleBluetoothResponseMessage(byte[] responsePacket)
 			throws UnsupportedEncodingException
 	{
@@ -392,13 +578,19 @@ public class RoutingManager
 			String previousNodeName = GetLastNodeName(path2Str);
 			String newPath = RemoveLastNodeName(path2Str);
 
-			SendResponseMessageBluetooth(serviceName, path1Str, newPath,
+			if ( GetNodeType(previousNodeName) == TYPE_BLUETOOTH)
+			{
+			      SendResponseMessageBluetooth(serviceName, path1Str, newPath,
 					previousNodeName);
-		}else{
-			// response message arrived at source node
-			return; // end
+			}
+			else if ( GetNodeType(previousNodeName) == TYPE_WIFI)
+			{
+				SendResponseMessageWifi(serviceName, path1Str, newPath,
+						previousNodeName);
+				
+			}
+			
 		}
-
 	}
     
 
@@ -445,12 +637,19 @@ public class RoutingManager
 			String previousNodeName = GetLastNodeName(path2Str);
 			String newPath = RemoveLastNodeName(path2Str);
 
-			SendResponseMessageWifi(serviceName, path1Str, newPath,
+			if ( GetNodeType(previousNodeName) == TYPE_BLUETOOTH)
+			{
+			      SendResponseMessageBluetooth(serviceName, path1Str, newPath,
 					previousNodeName);
-		}else{
-			// response message arrived at source node
-			return; // end
+			}
+			else if ( GetNodeType(previousNodeName) == TYPE_WIFI)
+			{
+				SendResponseMessageWifi(serviceName, path1Str, newPath,
+						previousNodeName);
+				
+			}
 		}
+		
 
 	}
 	
@@ -523,7 +722,7 @@ public class RoutingManager
 			    System.arraycopy(responseDataPacket, 2 * 8096, dataLen, 0, 4);
 				
 			    BigInteger len = new BigInteger(dataLen);
-			    dataLenInt = len.intValue();  
+			    dataLenInt = ( dataLen[0] & 0xFF)  + ( ( dataLen[1] & 0xFF) << 8) +  ( ( dataLen[2] & 0xFF) << 16) +  ( ( dataLen[1] & 0xFF) << 24)  ;  
 			    
 			    data = new byte[dataLenInt]; 
 			    
@@ -555,16 +754,23 @@ public class RoutingManager
 					String previousNodeName = GetLastNodeName(path2Str);
 					String newPath = RemoveLastNodeName(path2Str);
 
-					SendResponseMessageBluetooth(serviceName, path1Str, newPath,
+					if ( GetNodeType(previousNodeName) == TYPE_BLUETOOTH)
+					{
+						
+						SendResponseMessageBluetooth(serviceName, path1Str, newPath,
+								previousNodeName);
+					}
+					else  if ( GetNodeType(previousNodeName) == TYPE_WIFI )
+					{
+					    SendResponseMessageWifi(serviceName, path1Str, newPath,
 							previousNodeName);
-				}else{
-					// response message arrived at source node
-					return; // end
+					}
 				}
 		
 		
 	}
     
+
 	public void HandleWifiResponseDataMessage(byte[] responseDataPacket ) throws UnsupportedEncodingException
 	{
 		
@@ -585,9 +791,8 @@ public class RoutingManager
 
 				byte packType = responseDataPacket[ 2 * 8096 + 4 + 1];
 			    System.arraycopy(responseDataPacket, 2 * 8096, dataLen, 0, 4);
-				
-			    BigInteger len = new BigInteger(dataLen);
-			    dataLenInt = len.intValue();  
+
+			    dataLenInt = ByteUtil.fromByteArray(dataLen);  
 			    
 			    data = new byte[dataLenInt]; 
 			    
@@ -599,7 +804,7 @@ public class RoutingManager
 				 * if the response message is meant for this node , then update routing tables
 				*/
 				if ((nodes.length == 1) && (GetLastNodeName(path2Str)
-						.compareTo(BluetoothUtil.adapter.getName()) == 0))
+						.compareTo(WifiUtil.GetName()) == 0))
 				{
 					
 					 //At this point, there might be more than one possible
@@ -614,21 +819,30 @@ public class RoutingManager
 				 * If the response message has not arrived at source node,
 				 * update send the response message again.
 				 */
-				if ( (nodes.length != 1) || (GetLastNodeName(path2Str).compareTo(BluetoothUtil.adapter.getName()) != 0) )
+				if ( (nodes.length != 1) || (GetLastNodeName(path2Str).compareTo(WifiUtil.GetName()) != 0) )
 				{
 					String previousNodeName = GetLastNodeName(path2Str);
 					String newPath = RemoveLastNodeName(path2Str);
 
-					SendResponseMessageWifi(serviceName, path1Str, newPath,
+					if ( GetNodeType(previousNodeName) == TYPE_BLUETOOTH)
+					{
+						
+						SendResponseMessageBluetooth(serviceName, path1Str, newPath,
+								previousNodeName);
+					}
+					else  if ( GetNodeType(previousNodeName) == TYPE_WIFI )
+					{
+					    SendResponseMessageWifi(serviceName, path1Str, newPath,
 							previousNodeName);
-				}else{
-					// response message arrived at source node
-					return; // end
+					}
 				}
+			
 		
 		
 	}
 
+	
+	
 	public void HandleBluetoothDiscoveryMessage(byte[] discoveryPacket)
 			throws UnknownHostException, UnsupportedEncodingException
 	{
@@ -673,6 +887,13 @@ public class RoutingManager
 			 */
 			String newPath = joinNodes(pathStr, GetBluetoothName());
 			SendDiscoverMessagesBluetooth(serviceName, newPath);
+			 if ( ConfigManager.configValues.containsKey("wifinode"))
+			    {
+			    	
+			    	String wifiPath = joinNodes(pathStr,WifiUtil.GetWifiName());
+				    SendDiscoverMessagesWifi(serviceName, wifiPath);
+			    	
+			    }
 
 		} else
 		{
@@ -681,8 +902,82 @@ public class RoutingManager
 			// updating path
 			String newPath = joinNodes(pathStr, GetBluetoothName());
 			SendDiscoverMessagesBluetooth(serviceName, newPath);
+			 if ( ConfigManager.configValues.containsKey("wifinode"))
+			    {
+					String wifiPath = joinNodes(pathStr,WifiUtil.GetWifiName());
+				    SendDiscoverMessagesWifi(serviceName, wifiPath);
+			    }
 		}
 
 	}
+	public void HandleWifiDiscoveryMessage(byte[] discoveryPacket)
+			throws UnknownHostException, UnsupportedEncodingException
+	{
 
+		// See if we can service the request ?
+		// Get the type of the resource from the discovery packet
+		byte[] service = new byte[1025];
+		byte[] path = new byte[8096 - 1024];
+		System.arraycopy(discoveryPacket, 1, service, 0, 1023);
+		System.arraycopy(discoveryPacket, 1024, path, 0, 8096 - 1024);
+		String serviceName = ByteUtil.ByteArrayToString(service);
+		String pathStr = ByteUtil.ByteArrayToString(path);
+
+		/*
+		 * STOPPING CRITERIA for ROUTING To avoid looping and using TTL, if the
+		 * path contains the same node more than one time stop this process.
+		 */
+		if (pathStr.contains(WifiUtil.GetWifiName()))
+		{
+			return; // get out
+		}
+
+		/*
+		 * If that is ok, send the response packet.
+		 */
+		if (ConfigManager.Get("USE" + serviceName) == "yes")
+		{
+
+			// get the previous node's name
+			String previousNodeName = GetLastNodeName(pathStr);
+			pathStr = joinNodes(pathStr, WifiUtil.GetWifiName());
+
+			// copy the full path to another space in packet
+			String path2 = RemoveLastNodeName(pathStr);
+			SendResponseMessageWifi(serviceName, pathStr, path2,
+					previousNodeName);
+
+			/*
+			 * To return all of the possible services to source node, we are
+			 * sending discover packets to neighbours if there is more
+			 * neighbour.
+			 */
+			String newPath = joinNodes(pathStr, WifiUtil.GetWifiName());
+			SendDiscoverMessagesWifi(serviceName, newPath);
+
+		    if ( ConfigManager.configValues.containsKey("btnode"))
+		    {
+		    	String Bt = joinNodes(pathStr, GetBluetoothName());
+		    	SendDiscoverMessagesBluetooth(serviceName, Bt);
+		    	
+		    }
+		
+		} else
+		{
+
+			// if we cannot, send the discovery packet to its neighbours after
+			// updating path
+			String newPath = joinNodes(pathStr, WifiUtil.GetWifiName());
+			SendDiscoverMessagesWifi(serviceName, newPath);
+			 if ( ConfigManager.configValues.containsKey("btnode"))
+			    {
+			    	
+				 String Bt = joinNodes(pathStr, GetBluetoothName());
+			    	SendDiscoverMessagesBluetooth(serviceName, Bt);
+			    	
+			    }
+		 
+		}
+
+	}
 }

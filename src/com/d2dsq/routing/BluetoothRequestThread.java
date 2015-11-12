@@ -94,7 +94,9 @@ public class BluetoothRequestThread extends Thread
 			mes = new com.d2dsq.models.Message(
 					com.d2dsq.models.Message.REQUEST_MESSAGE, textMsg,
 					InetAddress.getLocalHost(), "ewssdfd");
+			
 			mes.SetDiscoverMessage(service, path);
+			mes.setResponsePath(path);
 			mes.setDestPhone(destPh);
 
 		} catch (UnknownHostException e)
@@ -120,12 +122,20 @@ public class BluetoothRequestThread extends Thread
 		else  if ( type == RoutingManager.TYPE_WIFI)
 		{
 			
-		   for (  String ip: WifiUtil.neighbours)
+		   if ( !WifiUtil.isGroupOwner)
 		   {
-			    if ( ip.compareTo(desDev) == 0 )
- 
-			    	 WifiUtil.SendData(mes.CreateSMSRequestPacket(), ip);
-		   
+			   WifiUtil.SendData(mes.CreateSMSRequestPacket(), WifiUtil.groupOwnerAdderess.getHostAddress());
+			   
+		   }
+		   else
+		   {
+				for (String ip : WifiUtil.neighbours)
+				{
+					if (ip.compareTo(desDev) == 0)
+
+						WifiUtil.SendData(mes.CreateSMSRequestPacket(), ip);
+
+				}
 		   }
 		
 		}

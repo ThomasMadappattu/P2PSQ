@@ -7,9 +7,11 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import android.os.Message;
 import android.util.Log;
 
 import com.d2dsq.routing.*;
+import com.d2dsq.ui.MainApplication;
 
 public class WifiServerThread implements Runnable {
 
@@ -68,7 +70,9 @@ public class WifiServerThread implements Runnable {
 				
 				
 				Log.v(TAG,"Got something ");
-			
+			    Message m = new Message(); 
+			    m.what = 1; 
+			    MainApplication.wifiMessage.sendMessage(m); 
 				this.packetQueue.add(trimmedBytes);
 				socket.close();
 				WifiUtil.m_WifiHandler.sendEmptyMessage(1); 

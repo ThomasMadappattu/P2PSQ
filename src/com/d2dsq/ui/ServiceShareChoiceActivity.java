@@ -23,6 +23,10 @@ public class ServiceShareChoiceActivity extends Activity
 	CheckBox smsCheckBox;
 	CheckBox camCheckBox;
 	CheckBox inetCheckBox;
+	CheckBox wifiCheckBox;
+	CheckBox btCheckBox; 
+	
+	
 	Button doneButton;
 	Spinner serviceSpinner;
 	Bundle passedData = null;
@@ -66,7 +70,7 @@ public class ServiceShareChoiceActivity extends Activity
 		public void onFinish()
 		{
 			// TODO Auto-generated method stub
-			
+			this.start(); 
 		}
 	}; 
 	@Override
@@ -80,6 +84,8 @@ public class ServiceShareChoiceActivity extends Activity
 		doneButton = (Button) findViewById(R.id.doneButton);
 		serviceSpinner = (Spinner) findViewById(R.id.spAvServices);
 		
+		wifiCheckBox = (CheckBox) findViewById(R.id.wifiCheckBox);
+		btCheckBox = (CheckBox)findViewById(R.id.btCheckbox); 
 		
 		
 		/* 
@@ -97,6 +103,8 @@ public class ServiceShareChoiceActivity extends Activity
 			{
 				
 				String currentItem = serviceSpinner.getSelectedItem().toString(); 
+				
+				
 				
 				if ( currentItem.length() > 2 )
 				{
@@ -154,6 +162,17 @@ public class ServiceShareChoiceActivity extends Activity
 				{
 					ConfigManager.Set("USEINET", "no");
 				}
+				if (wifiCheckBox.isChecked())
+				{
+					
+					ConfigManager.Set("wifinode", "yes");
+					
+				}
+				if ( btCheckBox.isChecked())
+				{
+					ConfigManager.Set("btnode", "yes"); 
+				}
+				
 				ConfigManager.Set("sharedServices", configString);
 				ConfigManager.Set("useService", serviceSpinner
 						.getSelectedItem().toString());

@@ -123,6 +123,7 @@ public class WifiDirectBroadcastReceiver extends BroadcastReceiver{
 							
 							WifiUtil.isGroupOwner = true; 
 							WifiUtil.groupOwnerAdderess = info.groupOwnerAddress; 
+							Log.v("BR", "Got ip"); 
 							
 						}
 						
@@ -140,6 +141,11 @@ public class WifiDirectBroadcastReceiver extends BroadcastReceiver{
 							
 							WifiUtil.isGroupOwner = false; 
 							WifiUtil.groupOwnerAdderess = info.groupOwnerAddress; 
+							
+							byte[] ping= new byte[2];
+							ping[0] = -55; 
+							WifiUtil.SendData(ping,info.groupOwnerAddress.getHostAddress() );
+							Log.v("BR", "Got ip"); 
 						}	
 					}
 				});				
